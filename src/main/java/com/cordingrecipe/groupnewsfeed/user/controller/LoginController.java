@@ -16,18 +16,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class LoginController {
     private final UserService userService;
 
     @PostMapping("/login") //user 로그인기능
-    public ResponseEntity<UserLoginResponseDto> login(@Valid
+    public ResponseEntity<UserLoginResponseDto>  login(@Valid
                                                       @RequestBody UserLoginRequestDto dto, //dto:email,password
                                                       HttpServletRequest request) { //session
-        UserLoginResponseDto loginUserId = userService.login(dto);//이메일,비밀번호로 id찾기
+        UserLoginResponseDto loginUserId = userService.login(dto);//이메일,비밀번호로 id 찾기
 
         HttpSession session = request.getSession(true); //세선값 가져오기
         session.setAttribute("LOGIN_USER", loginUserId);//session 에 정보저장
-        return new ResponseEntity<>(loginUserId, HttpStatus.OK);//
+        return new ResponseEntity<>(loginUserId, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout") //user 로그아웃
+    public ResponseEntity<String> logout(HttpServletRequest request){
+        HttpSession session = request.getSession(); //요청에 담긴 session 가져옴
+        if(session !=null){
+            session.invalidate();
+        }
+        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }
