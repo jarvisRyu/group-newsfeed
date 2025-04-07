@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class LoginRequestDto {
+public class UserLoginRequestDto {
 
     @NotBlank(message = "이메일은 필수 입력값입니다.")
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",message = "유효한 이메일 형식이 아닙니다.")
