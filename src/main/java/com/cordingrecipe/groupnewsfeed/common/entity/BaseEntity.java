@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.entity;
+package com.cordingrecipe.groupnewsfeed.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
