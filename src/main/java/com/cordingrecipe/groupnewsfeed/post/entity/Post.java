@@ -1,5 +1,7 @@
-package com.cordingrecipe.groupnewsfeed.entity;
+package com.cordingrecipe.groupnewsfeed.post.entity;
 
+import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
+import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

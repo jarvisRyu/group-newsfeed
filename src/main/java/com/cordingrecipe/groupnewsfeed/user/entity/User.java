@@ -1,5 +1,6 @@
-package com.cordingrecipe.groupnewsfeed.entity;
+package com.cordingrecipe.groupnewsfeed.user.entity;
 
+import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name="user")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

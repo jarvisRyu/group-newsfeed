@@ -1,5 +1,8 @@
-package com.cordingrecipe.groupnewsfeed.entity;
+package com.cordingrecipe.groupnewsfeed.comment.entity;
 
+import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
+import com.cordingrecipe.groupnewsfeed.post.entity.Post;
+import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "comment")
-public class Comment extends BaseEntity{
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
