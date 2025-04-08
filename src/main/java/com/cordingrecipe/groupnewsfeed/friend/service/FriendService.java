@@ -1,14 +1,13 @@
 package com.cordingrecipe.groupnewsfeed.friend.service;
 
 
-import com.cordingrecipe.groupnewsfeed.friend.entity.Friends;
-import com.cordingrecipe.groupnewsfeed.friend.repository.FriendRepository;
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendRequestDto;
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendResponseDto;
+import com.cordingrecipe.groupnewsfeed.friend.entity.Friends;
+import com.cordingrecipe.groupnewsfeed.friend.repository.FriendRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -107,13 +106,13 @@ public class FriendService {
 
     }
     //내가 받은 친구 목록 조회
-    @Transactional
-    public void getReceivedRequests(Long requesterId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("LOGIN_USER");
-        if (userId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
-
+//    @Transactional
+//    public void getReceivedRequests(Long requesterId, HttpSession session) {
+//        Long userId = (Long) session.getAttribute("LOGIN_USER");
+//        if (userId == null) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+//        }
+//
 
 
 
@@ -121,11 +120,9 @@ public class FriendService {
 
 
 
-
-
     //그냥 친구 목록getMyFriends()
 
-}
+
 
 
 

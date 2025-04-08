@@ -25,7 +25,7 @@ public class FriendController {
 
     }
 
-    @PatchMapping("requests/{id}")
+    @PatchMapping("requests/{id}/accept")
     public ResponseEntity<CreateFriendResponseDto> acceptFriendRequest(@PathVariable Long id, HttpSession session) {
         CreateFriendResponseDto createFriendResponseDto =
                 friendService.acceptFriendRequest(id, session);
@@ -33,7 +33,7 @@ public class FriendController {
         return ResponseEntity.ok(createFriendResponseDto);
     }
 
-    @PatchMapping("requests/{id}")
+    @PatchMapping("requests/{id}/reject")
     public ResponseEntity<CreateFriendResponseDto> declineFriendRequest(@PathVariable Long id, HttpSession session) {
         CreateFriendResponseDto createFriendResponseDto =
                 friendService.rejectFriendRequest(id, session);
