@@ -24,6 +24,6 @@ public class CreatePostResponseDto {
     }
 
     public static CreatePostResponseDto toDto(Post post){
-        return new CreatePostResponseDto(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt());
+        return new CreatePostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getCreatedAt());
     }
 }
