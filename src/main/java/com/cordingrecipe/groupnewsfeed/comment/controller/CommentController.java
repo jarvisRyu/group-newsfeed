@@ -20,6 +20,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId, HttpServletRequest request, CommentRequestDto dto){
 
@@ -32,5 +33,15 @@ public class CommentController {
         return ResponseEntity.ok(response);
 
     }
+
+    // 게시물 댓글 조회
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CommentAllResponseDto>> getComments(@PathVariable Long postId) {
+
+        List<CommentAllResponseDto> comments = commentService.getComments(postId);
+        return ResponseEntity.ok(comments);
+
+    }
+
 
 }

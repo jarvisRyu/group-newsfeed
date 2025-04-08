@@ -1,5 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.comment.service;
 
+import com.cordingrecipe.groupnewsfeed.comment.dto.CommentAllResponseDto;
 import com.cordingrecipe.groupnewsfeed.comment.dto.CommentResponseDto;
 import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
 import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
@@ -33,6 +34,15 @@ public class CommentService {
         Comment comment = new Comment(user, post, commentContent);
         commentRepository.save(comment);
         return new CommentResponseDto(comment.getCommentContent());
+    }
+
+    public List<CommentAllResponseDto> getComments(Long postId) {
+        return postRepository.findById(postId)
+                .map(post -> post.getComments()) // 댓글 목록 가져오기
+                .stream() // 댓글 목록을 스트림으로 변환
+                .flatMap(Collection::stream) // 댓글 리스트를 스트림으로 풀기
+                .map(CommentAllResponseDto::toDto) // 각 댓글을 CommentAllResponseDto로 변환
+                .collect(Collectors.toList()); // 최종 리스트 반환
     }
 
 }
