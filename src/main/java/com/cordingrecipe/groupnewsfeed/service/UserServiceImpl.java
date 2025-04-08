@@ -1,7 +1,5 @@
 package com.cordingrecipe.groupnewsfeed.service;
 
-import com.cordingrecipe.groupnewsfeed.Exception.CustomException;
-import com.cordingrecipe.groupnewsfeed.Exception.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.config.PasswordEncoder;
 import com.cordingrecipe.groupnewsfeed.dto.*;
 import com.cordingrecipe.groupnewsfeed.entity.User;
