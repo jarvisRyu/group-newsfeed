@@ -33,10 +33,15 @@ public class Comment extends BaseEntity {
     @JoinColumn(name="post_id")
     private Post post;
 
+    public Comment(String newComment){
+        this.commentContent = newComment;
+    }
+
     public Comment(User user, Post post, String commentContent){
       this.user = user;
       this.post = post;
       this.commentContent = commentContent;
     }
+
 
 }
