@@ -7,9 +7,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
+import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
-@Builder
 public class GlobalExceptionHandler {
 
     /* 양식
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
         String errorMessage = (fieldError != null && fieldError.getDefaultMessage() != null)
                 ? fieldError.getDefaultMessage() : "잘못된 요청입니다.";
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(400)
+                .status(e.getStatusCode().value())
                 .error("Validation Failed")
                 .message(errorMessage)
                 .build();
@@ -62,7 +63,27 @@ public class GlobalExceptionHandler {
                 .error("Illegal Argument")
                 .message(e.getMessage() != null ? e.getMessage() : "잘못된 요청입니다.")
                 .build();
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(403)
+                .error("Access Denied")
+                .message(e.getMessage() != null ? e.getMessage() : "접근 권한이 없습니다.")
+                .build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    protected ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(e.getStatusCode().value())
+                .error("Response Status Error")
+                .message(e.getReason() != null ? e.getReason() : "에러가 발생했습니다.")
+                .build();
+        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
     }
 
     //모든 예외처리
@@ -75,4 +96,6 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(500).body(errorResponse);
     }
+
+
 }

@@ -2,6 +2,7 @@ package com.cordingrecipe.groupnewsfeed.comment.controller;
 
 import com.cordingrecipe.groupnewsfeed.comment.dto.*;
 import com.cordingrecipe.groupnewsfeed.comment.service.CommentService;
+import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
