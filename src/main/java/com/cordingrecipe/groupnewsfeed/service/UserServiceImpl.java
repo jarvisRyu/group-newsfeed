@@ -66,14 +66,15 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+//            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         User user = optionalUser.get();
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+//            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
+        user.setDeleted(true);
         userRepository.delete(user);
     }
 }

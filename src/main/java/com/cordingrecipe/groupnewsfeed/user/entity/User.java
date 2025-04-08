@@ -4,7 +4,9 @@ import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public class User extends BaseEntity {
     private String email;
     private String password;
 
+    private boolean isDeleted = false;
 
     public User(String username, String email, String password) {
         this.username = username;
