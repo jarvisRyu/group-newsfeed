@@ -17,10 +17,10 @@ public class ErrorResponse {
     private final String error; //상태코드 메세지
     private final String message;
 
-    public ErrorResponse(int status, String error,String message) {
-        this.status = status;
-        this.error = error;
-        this.message = message;
+    public ErrorResponse(ErrorCode errorCode) {
+        this.status = errorCode.getStatus();
+        this.error = errorCode.getError();
+        this.message = errorCode.getMessage();
     }
 
 }
