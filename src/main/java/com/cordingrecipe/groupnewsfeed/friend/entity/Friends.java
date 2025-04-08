@@ -14,7 +14,7 @@ public class Friends extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // requestId로 추후에 쓰일 것임.
 
     @ManyToOne
     @JoinColumn(name = "requester_id")
@@ -23,6 +23,11 @@ public class Friends extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private User toUser;
+
+    @Setter
+    @Getter
+    @Enumerated(EnumType.STRING)
+    private FriendRequestStatus status;
 
     public enum FriendRequestStatus {
         PENDING,
