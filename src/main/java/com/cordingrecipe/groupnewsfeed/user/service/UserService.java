@@ -7,19 +7,22 @@ import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public UserLoginResponseDto login(@Valid UserLoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(
-                ()->new IllegalArgumentException ("아이디와 비밀번호를 정확히 입력해 주세요.")
+                ()->new IllegalArgumentException ("해당 이메일이 존재하지 않습니다.")
         );
-        if(!user.getPassword().equals(dto.getPassword())){
-        throw new IllegalArgumentException ("아이디와 비밀번호를 정확히 입력해 주세요");
+        if(passwordEncoder.matches(dto.getPassword(),user.getPassword())){
+        throw new IllegalArgumentException ("비밀번호가 일치하지 않습니다.");
         }
         return new UserLoginResponseDto(
                 user.getId(),
