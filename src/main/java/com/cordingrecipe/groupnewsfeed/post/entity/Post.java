@@ -1,10 +1,14 @@
 package com.cordingrecipe.groupnewsfeed.post.entity;
 
+import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
 import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -22,6 +26,9 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
 
     private void setUser(User user) {
         this.user = user;
