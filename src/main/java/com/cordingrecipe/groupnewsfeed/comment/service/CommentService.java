@@ -6,6 +6,7 @@ import com.cordingrecipe.groupnewsfeed.comment.dto.EditedResponseDto;
 import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
 import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
+import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final PasswordEncorder passwordEncorder;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -30,7 +30,7 @@ public class CommentService {
     @Transactional
     public CommentResponseDto postComments(Long postId, Long userId, String commentContent) {
         User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다."));
-        Post post = postRepositoy.findById(postId).orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
         if(!post.getUser().getId().equals(user.getId())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
@@ -52,7 +52,7 @@ public class CommentService {
     @Transactional
     public EditedResponseDto updateComment(Long postId, Long commentId, String wishComment, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다."));
-        Post post = postRepositoy.findById(postId).orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
         Comment comment = commentRepository.findById(commentId).orElseThrow(()-> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다."));
 
         if(!(user.getId().equals(post.getUser().getId()) || comment.getUser().getId().equals(user.getId()))){
@@ -65,4 +65,16 @@ public class CommentService {
 
     }
 
+    @Transactional
+    public void delete(Long postId, Long commentId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("해당하는 유저가 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(()-> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다."));
+
+        if(!(user.getId().equals(post.getUser().getId()) || comment.getUser().getId().equals(user.getId()))){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
+        }
+
+        commentRepository.delete(comment);
+    }
 }
