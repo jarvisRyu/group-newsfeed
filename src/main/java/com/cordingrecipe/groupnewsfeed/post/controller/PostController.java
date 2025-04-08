@@ -1,32 +1,36 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
-import com.cordingrecipe.groupnewsfeed.post.dto.CreatPostRequestDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.UpdatePostResponseDto;
-import com.cordingrecipe.groupnewsfeed.post.service.Postservice;
+import com.cordingrecipe.groupnewsfeed.post.service.PostService;
+import com.cordingrecipe.groupnewsfeed.user.entity.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api")
 public class PostController {
 
-    private final Postservice postService;
+    private final PostService postService;
 
-    public PostController(Postservice postService) {
+    public PostController(PostService postService) {
         this.postService = postService;
     }
 
     @PostMapping
-    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreatPostRequestDto requestDto) {
+    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreatePostRequestDto requestDto) {
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
                         requestDto.getTitle(),
-                        requestDto.getContents()
+                        requestDto.getContents(),
+                        new User()
                 );
 
         return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
@@ -47,25 +51,30 @@ public class PostController {
         return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/edit")
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
-            @RequestBody CreatPostRequestDto requestDto
-    ) {
+            @RequestBody CreatePostRequestDto requestDto,
+            HttpSession session // 세션 추가
+    ) throws AccessDeniedException {
         UpdatePostResponseDto updatePostResponseDto =
                 postService.updatePost(
                         id,
                         requestDto.getTitle(),
-                        requestDto.getContents()
+                        requestDto.getContents(),
+                        session // 서비스에 세션 전달
+
                 );
 
         return new ResponseEntity<>(updatePostResponseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePostById(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePostById(
+            @PathVariable Long id,
+            @RequestBody HttpSession session) throws AccessDeniedException {
 
-        postService.deletePostById(id);
+        postService.deletePostById(id, session);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

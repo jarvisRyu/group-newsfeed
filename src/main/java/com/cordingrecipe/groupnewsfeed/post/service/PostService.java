@@ -1,31 +1,29 @@
 package com.cordingrecipe.groupnewsfeed.post.service;
 
-import com.cordingrecipe.groupnewsfeed.post.dto.CreatPostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class Postservice {
+public class PostService {
 
     private final PostRepository postRepository;
 
-    public Postservice(PostRepository postRepository) {
+    public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
-    public CreatePostResponseDto savePost(String title, String contents) {
+    public CreatePostResponseDto savePost(String title, String contents, User user) {
 
-        Post post = new Post(title, contents);
+        Post post = new Post(title, contents, user);
 
         Post savePost = postRepository.save(post);
 
@@ -59,10 +57,23 @@ public class Postservice {
     }
 
     @Transactional
-    public UpdatePostResponseDto updatePost(Long id, String title, String contents) {
+    public UpdatePostResponseDto updatePost(Long id, String title, String contents, HttpSession session) throws AccessDeniedException {
 
+        // 세션에서 로그인된 사용자 ID 꺼내기
+        Long sessionUserId = (Long) session.getAttribute("userId");
+        if (sessionUserId == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        // 게시글 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
+        // 작성자와 현재 사용자 ID 비교
+        if (!findPost.getUser().getId().equals(sessionUserId)) {
+            throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
+        }
+
+        // 수정 로직
         findPost.updatePost(title, contents);
 
         return new UpdatePostResponseDto(
@@ -73,10 +84,22 @@ public class Postservice {
         );
     }
 
-    public void deletePostById(Long id) {
+    public void deletePostById(Long id, HttpSession session) throws AccessDeniedException {
+
+        // 세션에서 로그인된 사용자 ID 꺼내기
+        Long sessionUserId = (Long) session.getAttribute("userId");
+        if (sessionUserId == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
+        // 작성자와 현재 사용자 ID 비교
+        if (!findPost.getUser().getId().equals(sessionUserId)) {
+            throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");
+        }
+
+        // 삭제 로직
         postRepository.delete(findPost);
     }
 }
