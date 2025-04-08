@@ -30,8 +30,13 @@ public class Comment extends BaseEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="schedule_id")
+    @JoinColumn(name="post_id")
     private Post post;
 
+    public Comment(User user, Post post, String commentContent){
+      this.user = user;
+      this.post = post;
+      this.commentContent = commentContent;
+    }
 
 }
