@@ -17,7 +17,7 @@ public class Post extends BaseEntity {
     private Long id;
 
     private String title;
-    private String content;
+    private String contents;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -27,9 +27,15 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public Post(String title, String content, User user) {
+    public Post(String title, String contents, User user) {
         this.title = title;
-        this.content = content;
+        this.contents = contents;
         this.user = user;
     }
+
+    public void updatePost(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
+    }
+
 }
