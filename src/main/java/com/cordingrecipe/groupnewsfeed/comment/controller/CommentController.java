@@ -43,5 +43,17 @@ public class CommentController {
 
     }
 
+    // 특정 댓글 수정
+    @PutMapping(value = "/{commentId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody EditCommentRequestDto editCommentRequestDto, HttpServletRequest request) {
 
+        HttpSession session = request.getSession(false); // 기존 세션 가져오기
+        UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
+        Long userId = loginUser.getId();
+
+        EditedResponseDto dto = commentService.updateComment(postId, commentId, editCommentRequestDto.getWishComment(), userId);
+
+        return ResponseEntity.ok(dto);
+
+    }
 }
