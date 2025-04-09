@@ -51,7 +51,7 @@ public class PostService {
                 .map(CreatePostResponseDto::toDto);
 
     }
-
+    @Transactional(readOnly = true)
     public CreatePostResponseDto findById(Long id) {
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
@@ -94,6 +94,7 @@ public class PostService {
         );
     }
 
+    @Transactional
     public void deletePostById(Long id, HttpSession session) throws AccessDeniedException {
 
         // 세션에서 로그인된 사용자 ID 꺼내기
