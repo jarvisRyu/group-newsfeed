@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,12 +42,10 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentAllResponseDto> getComments(Long postId) {
-        return postRepository.findById(postId)
-                .map(post -> post.getComments()) // 댓글 목록 가져오기
-                .stream() // 댓글 목록을 스트림으로 변환
-                .flatMap(Collection::stream) // 댓글 리스트를 스트림으로 풀기
-                .map(CommentAllResponseDto::toDto) // 각 댓글을 CommentAllResponseDto로 변환
-                .collect(Collectors.toList()); // 최종 리스트 반환
+        List<Comment> comments = commentRepository.findByPostIdOrderByUpdatedAtDesc(postId);
+        return comments.stream()
+                .map(CommentAllResponseDto::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
