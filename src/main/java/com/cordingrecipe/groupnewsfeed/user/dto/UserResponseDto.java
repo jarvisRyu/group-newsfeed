@@ -1,6 +1,6 @@
-package com.cordingrecipe.groupnewsfeed.dto;
+package com.cordingrecipe.groupnewsfeed.user.dto;
 
-import com.cordingrecipe.groupnewsfeed.entity.User;
+import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.dto;
+package com.cordingrecipe.groupnewsfeed.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,19 +6,17 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class SignUpRequestDto {
+@AllArgsConstructor
+public class UpdateUserRequestDto {
 
-    @Size(max=10, message = "10글자를 초과하지 마십시오.")
     @NotBlank
+    @Size(max = 10, message = "이름은 10글자를 초과할 수 없습니다.")
     private final String username;
-    @Email(message = "이메일 형식으로 작성하십시오.")
     @NotBlank
+    @Email(message = "이메일 형식이 아닙니다.")
     private final String email;
-    @Size(min=8, message = "비밀번호는 최소 8자 이상입니다.")
     @NotBlank
+    @Size(min = 8, message =" 비밀번호는 8자 이상이어야 합니다." )
     private final String password;
-
-
 }
