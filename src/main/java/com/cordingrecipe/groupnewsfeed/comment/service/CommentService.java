@@ -6,6 +6,7 @@ import com.cordingrecipe.groupnewsfeed.comment.dto.EditedResponseDto;
 import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
 import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
+import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
