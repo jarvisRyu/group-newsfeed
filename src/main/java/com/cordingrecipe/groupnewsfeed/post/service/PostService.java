@@ -33,7 +33,7 @@ public class PostService {
 
         return new CreatePostResponseDto(
                 savePost.getId(),
-                savePost.getUser().getUserName(),
+                savePost.getUser().getUsername(),
                 savePost.getTitle(),
                 savePost.getContents(),
                 savePost.getCreatedAt(),
@@ -58,7 +58,7 @@ public class PostService {
 
         return new CreatePostResponseDto(
                 findPost.getId(),
-                findPost.getUser().getUserName(),
+                findPost.getUser().getUsername(),
                 findPost.getTitle(),
                 findPost.getContents(),
                 findPost.getCreatedAt(),
