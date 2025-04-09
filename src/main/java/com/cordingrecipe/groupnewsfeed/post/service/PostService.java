@@ -6,6 +6,10 @@ import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,32 +33,36 @@ public class PostService {
 
         return new CreatePostResponseDto(
                 savePost.getId(),
-                savePost.getUser().getUserName(),
+                savePost.getUser().getUsername(),
                 savePost.getTitle(),
                 savePost.getContents(),
-                savePost.getCreatedAt()
+                savePost.getCreatedAt(),
+                savePost.getUpdatedAt()
         );
 
     }
 
-    public List<CreatePostResponseDto> findAllPost() {
+    // 페이징 기능으로 리펙토리
+    public Page<CreatePostResponseDto> findAllPost(int page, int size) {
 
-        return postRepository.findAll()
-                .stream()
-                .map(CreatePostResponseDto::toDto)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        return postRepository.findAll(pageable)
+                .map(CreatePostResponseDto::toDto);
+
     }
-
+    @Transactional(readOnly = true)
     public CreatePostResponseDto findById(Long id) {
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
         return new CreatePostResponseDto(
                 findPost.getId(),
-                findPost.getUser().getUserName(),
+                findPost.getUser().getUsername(),
                 findPost.getTitle(),
                 findPost.getContents(),
-                findPost.getCreatedAt()
+                findPost.getCreatedAt(),
+                findPost.getUpdatedAt()
         );
     }
 
@@ -86,6 +94,7 @@ public class PostService {
         );
     }
 
+    @Transactional
     public void deletePostById(Long id, HttpSession session) throws AccessDeniedException {
 
         // 세션에서 로그인된 사용자 ID 꺼내기

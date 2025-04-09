@@ -18,15 +18,18 @@ public class CreatePostResponseDto {
 
     private final LocalDateTime createdAt;
 
-    public CreatePostResponseDto(Long id, String username, String title, String contents, LocalDateTime createdAt) {
+    private final LocalDateTime updatedAt;
+
+    public CreatePostResponseDto(Long id, String username, String title, String contents, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.title = title;
         this.contents = contents;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static CreatePostResponseDto toDto(Post post){
-        return new CreatePostResponseDto(post.getId(), post.getUser().getUserName(), post.getTitle(), post.getContents(), post.getCreatedAt());
+        return new CreatePostResponseDto(post.getId(), post.getUser().getUserName(), post.getTitle(), post.getContents(), post.getCreatedAt(), post.getUpdatedAt());
     }
 }

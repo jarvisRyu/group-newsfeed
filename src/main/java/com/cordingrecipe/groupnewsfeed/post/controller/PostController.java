@@ -6,6 +6,7 @@ import com.cordingrecipe.groupnewsfeed.post.dto.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.service.PostService;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +37,16 @@ public class PostController {
         return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
     }
 
+    // 페이징 기능으로 리펙토리
     @GetMapping
-    public ResponseEntity<List<CreatePostResponseDto>> findAllPost() {
+    public ResponseEntity<Page<CreatePostResponseDto>> findAllPost(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
 
-        List<CreatePostResponseDto> allPostList = postService.findAllPost();
+        Page<CreatePostResponseDto> allPostPage = postService.findAllPost(page, size);
 
-        return new ResponseEntity<>(allPostList, HttpStatus.OK);
+        return new ResponseEntity<>(allPostPage, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
