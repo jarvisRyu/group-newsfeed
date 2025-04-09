@@ -6,6 +6,10 @@ import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,17 +36,20 @@ public class PostService {
                 savePost.getUser().getUserName(),
                 savePost.getTitle(),
                 savePost.getContents(),
-                savePost.getCreatedAt()
+                savePost.getCreatedAt(),
+                savePost.getUpdatedAt()
         );
 
     }
 
-    public List<CreatePostResponseDto> findAllPost() {
+    // 페이징 기능으로 리펙토리
+    public Page<CreatePostResponseDto> findAllPost(int page, int size) {
 
-        return postRepository.findAll()
-                .stream()
-                .map(CreatePostResponseDto::toDto)
-                .toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        return postRepository.findAll(pageable)
+                .map(CreatePostResponseDto::toDto);
+
     }
 
     public CreatePostResponseDto findById(Long id) {
@@ -54,7 +61,8 @@ public class PostService {
                 findPost.getUser().getUserName(),
                 findPost.getTitle(),
                 findPost.getContents(),
-                findPost.getCreatedAt()
+                findPost.getCreatedAt(),
+                findPost.getUpdatedAt()
         );
     }
 
