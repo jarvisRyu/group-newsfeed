@@ -24,7 +24,7 @@ public class PostService {
     private final UserRepository userRepository;
 
     public CreatePostResponseDto savePost(String title, String contents, Long userId) {
-    
+
         // 세션에서 로그인 유무 확인
         if (userId == null) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
@@ -94,7 +94,7 @@ public class PostService {
 
         // 수정 로직
         findPost.updatePost(title, contents);
-        if(contents == null) {
+        if (contents == null) {
             throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
         }
 
@@ -107,7 +107,7 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePostById(Long id, Long userId)  {
+    public void deletePostById(Long id, Long userId) {
 
         // 세션에서 로그인 유무 확인
         if (userId == null) {
