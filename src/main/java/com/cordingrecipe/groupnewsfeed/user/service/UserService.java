@@ -1,12 +1,7 @@
 package com.cordingrecipe.groupnewsfeed.user.service;
 
 import com.cordingrecipe.groupnewsfeed.config.PasswordEncoder;
-import com.cordingrecipe.groupnewsfeed.user.dto.SignUpRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.SignUpResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UpdateUserRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
+import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -49,11 +44,11 @@ public class UserService {
     }
 
     // 유저 단일 조회
-    public UserResponseDto findUser(Long id) {
+    public FindUserIdResponseDto findUser(Long id) {
 
         User user = userRepository.findByIdOrElseThrow(id);
 
-        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+        return FindUserIdResponseDto.toDto(user);
     }
 
     //유저 전체 조회
@@ -91,4 +86,9 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    @Transactional
+    public void updateIntroduction(Long id, UpdateIntroductionRequestDto dto) {
+        User user = userRepository.findByIdOrElseThrow(id);
+        user.updateIntroduction(dto.getIntroduction());
+    }
 }
