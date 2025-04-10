@@ -19,7 +19,10 @@ public enum ErrorCode {
     POST_CONTENT_REQUIRED(400, "Bad Request", "게시글 내용은 필수입니다."),
     POST_ACCESS_DENIED(403, "Forbidden", "해당 게시글에 대한 접근 권한이 없습니다."),
 
-    COMMENT_ACCESS_DENIED(403, "Forbidden", "해당 댓글에 대한 권한이 없습니다.");
+
+    COMMENT_CONTENT_REQUIRED(400, "Bad Request", "댓글 내용은 필수입니다."),
+    COMMENT_ACCESS_DENIED(403, "Forbidden", "해당 댓글에 대한 권한이 없습니다."),
+    COMMENT_NOT_FOUND(404,"Not Found","해당하는 댓글이 존재하지 않습니다.");
 
     private final int status;
     private final String error;

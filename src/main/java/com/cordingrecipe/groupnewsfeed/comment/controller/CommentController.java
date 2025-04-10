@@ -4,6 +4,7 @@ import com.cordingrecipe.groupnewsfeed.comment.dto.*;
 import com.cordingrecipe.groupnewsfeed.comment.service.CommentService;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.http.HttpSession;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.List;
 
 @Slf4j
@@ -24,7 +24,7 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId, HttpServletRequest request, CommentRequestDto dto){
+    ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId, HttpServletRequest request, @Valid @RequestBody CommentRequestDto dto){
 
         HttpSession session = request.getSession(false); // 기존 세션 가져오기
         UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
@@ -47,7 +47,7 @@ public class CommentController {
 
     // 특정 댓글 수정
     @PutMapping(value = "/{commentId}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody EditCommentRequestDto editCommentRequestDto, HttpServletRequest request) {
+    ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long postId, @PathVariable Long commentId, @Valid @RequestBody EditCommentRequestDto editCommentRequestDto, HttpServletRequest request) {
 
         HttpSession session = request.getSession(false); // 기존 세션 가져오기
         UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
