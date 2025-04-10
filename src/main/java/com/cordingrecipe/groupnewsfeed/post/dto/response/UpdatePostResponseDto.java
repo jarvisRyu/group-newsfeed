@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.post.dto;
+package com.cordingrecipe.groupnewsfeed.post.dto.response;
 
 import lombok.Getter;
 

@@ -1,44 +1,47 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
-import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostRequestDto;
-import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostResponseDto;
-import com.cordingrecipe.groupnewsfeed.post.dto.UpdatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.request.CreateAndUpdadePostRequestDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.service.PostService;
+import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/posts")
 public class PostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
-
     @PostMapping
-    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreatePostRequestDto requestDto) {
+    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreateAndUpdadePostRequestDto requestDto, HttpServletRequest request) {
+
+        // 로그인 인가 세션에서 사용자 ID 가져오기
+        HttpSession session = request.getSession(false); // 기존 세션 가져오기
+        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
+        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
                         requestDto.getTitle(),
                         requestDto.getContents(),
-                        new User()
+                        new User(),
+                        userId
                 );
 
         return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
     }
 
     // 페이징 기능으로 리펙토리
-    @GetMapping
+    @GetMapping("/newsfeed")
     public ResponseEntity<Page<CreatePostResponseDto>> findAllPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -59,16 +62,19 @@ public class PostController {
     @PutMapping("/{id}/edit")
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
-            @RequestBody CreatePostRequestDto requestDto,
-            HttpSession session // 세션 추가
-    ) throws AccessDeniedException {
+            @RequestBody CreateAndUpdadePostRequestDto requestDto, HttpServletRequest request
+    ) {
+
+        // 로그인 인가 세션에서 사용자 ID 가져오기
+        HttpSession session = request.getSession(false); // 기존 세션 가져오기
+        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
+        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+
         UpdatePostResponseDto updatePostResponseDto =
-                postService.updatePost(
-                        id,
+                postService.updatePost(id,
                         requestDto.getTitle(),
                         requestDto.getContents(),
-                        session // 서비스에 세션 전달
-
+                        userId
                 );
 
         return new ResponseEntity<>(updatePostResponseDto, HttpStatus.OK);
@@ -77,9 +83,14 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            @RequestBody HttpSession session) throws AccessDeniedException {
+            @RequestBody HttpServletRequest request) {
 
-        postService.deletePostById(id, session);
+        // 로그인 인가 세션에서 사용자 ID 가져오기
+        HttpSession session = request.getSession(false); // 기존 세션 가져오기
+        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
+        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+
+        postService.deletePostById(id, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

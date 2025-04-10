@@ -1,11 +1,13 @@
 package com.cordingrecipe.groupnewsfeed.post.service;
 
-import com.cordingrecipe.groupnewsfeed.post.dto.CreatePostResponseDto;
-import com.cordingrecipe.groupnewsfeed.post.dto.UpdatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
+import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
-import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,21 +15,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-
+@RequiredArgsConstructor
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
-
-    public CreatePostResponseDto savePost(String title, String contents, User user) {
+    public CreatePostResponseDto savePost(String title, String contents, User user, Long id) {
 
         Post post = new Post(title, contents, user);
+
+        if (contents == null) {
+            throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
+        }
 
         Post savePost = postRepository.save(post);
 
@@ -49,8 +49,8 @@ public class PostService {
 
         return postRepository.findAll(pageable)
                 .map(CreatePostResponseDto::toDto);
-
     }
+
     @Transactional(readOnly = true)
     public CreatePostResponseDto findById(Long id) {
 
@@ -67,24 +67,26 @@ public class PostService {
     }
 
     @Transactional
-    public UpdatePostResponseDto updatePost(Long id, String title, String contents, HttpSession session) throws AccessDeniedException {
+    public UpdatePostResponseDto updatePost(Long id, String title, String contents, Long userId) {
 
-        // 세션에서 로그인된 사용자 ID 꺼내기
-        Long sessionUserId = (Long) session.getAttribute("userId");
-        if (sessionUserId == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+        // 세션에서 로그인 유무 확인
+        if (userId == null) {
+            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
 
         // 게시글 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
-        // 작성자와 현재 사용자 ID 비교
-        if (!findPost.getUser().getId().equals(sessionUserId)) {
-            throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
+        // 작성자(ID)와 현재 사용자(ID) 비교
+        if (!findPost.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
         }
 
         // 수정 로직
         findPost.updatePost(title, contents);
+        if(contents == null) {
+            throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
+        }
 
         return new UpdatePostResponseDto(
                 findPost.getId(),
@@ -95,19 +97,18 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePostById(Long id, HttpSession session) throws AccessDeniedException {
+    public void deletePostById(Long id, Long userId)  {
 
-        // 세션에서 로그인된 사용자 ID 꺼내기
-        Long sessionUserId = (Long) session.getAttribute("userId");
-        if (sessionUserId == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+        // 세션에서 로그인 유무 확인
+        if (userId == null) {
+            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
-        // 작성자와 현재 사용자 ID 비교
-        if (!findPost.getUser().getId().equals(sessionUserId)) {
-            throw new AccessDeniedException("작성자만 삭제할 수 있습니다.");
+        // 작성자(ID)와 현재 사용자(ID) 비교
+        if (!findPost.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
         }
 
         // 삭제 로직
