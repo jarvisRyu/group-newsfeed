@@ -1,12 +1,9 @@
 package com.cordingrecipe.groupnewsfeed.user.service;
 
+import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
+import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.config.PasswordEncoder;
-import com.cordingrecipe.groupnewsfeed.user.dto.SignUpRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.SignUpResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UpdateUserRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginRequestDto;
-import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
+import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -29,7 +26,7 @@ public class UserService {
         User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(
                 ()->new IllegalArgumentException ("해당 이메일이 존재하지 않습니다.")
         );
-        if(passwordEncoder.matches(dto.getPassword(),user.getPassword())){
+        if(!passwordEncoder.matches(dto.getPassword(),user.getPassword())){
         throw new IllegalArgumentException ("비밀번호가 일치하지 않습니다.");
         }
         return new UserLoginResponseDto(
@@ -38,7 +35,7 @@ public class UserService {
     }
 
     //회원가입
-    @jakarta.transaction.Transactional
+    @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -49,20 +46,21 @@ public class UserService {
     }
 
     // 유저 단일 조회
-    public UserResponseDto findUser(Long id) {
+    public FindUserIdResponseDto findUser(Long id) {
 
         User user = userRepository.findByIdOrElseThrow(id);
 
-        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+        return FindUserIdResponseDto.toDto(user);
     }
 
     //유저 전체 조회
     public List<UserResponseDto> findAll() {
+
         return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
     }
 
     //유저 정보 수정
-    @jakarta.transaction.Transactional
+    @Transactional
     public User updateUser(Long id, UpdateUserRequestDto requestDto) {
         //해당 유저 데이터 존재 여부 확인&불러오기
         User savedUser = userRepository.findByIdOrElseThrow(id);
@@ -74,21 +72,26 @@ public class UserService {
     }
 
     //회원탈퇴
-    @jakarta.transaction.Transactional
+    @Transactional
     public void signOut(Long id, String password) {
 
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-//            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         User user = optionalUser.get();
         if (!passwordEncoder.matches(password, user.getPassword())) {
-//            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
         user.setDeleted(true);
         userRepository.delete(user);
     }
 
+    @Transactional
+    public void updateIntroduction(Long id, UpdateIntroductionRequestDto dto) {
+        User user = userRepository.findByIdOrElseThrow(id);
+        user.updateIntroduction(dto.getIntroduction());
+    }
 }

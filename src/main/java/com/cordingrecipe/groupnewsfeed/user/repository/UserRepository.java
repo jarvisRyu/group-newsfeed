@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
         return findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("USER_NOT_FOUND)"));
     }
-    Optional<User> findByIdAndIsDeletedFalse(Long id);
+
 
 }
