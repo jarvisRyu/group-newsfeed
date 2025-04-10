@@ -1,5 +1,7 @@
 package com.cordingrecipe.groupnewsfeed.user.service;
 
+import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
+import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.config.PasswordEncoder;
 import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
@@ -33,7 +35,7 @@ public class UserService {
     }
 
     //회원가입
-    @jakarta.transaction.Transactional
+    @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
@@ -53,11 +55,12 @@ public class UserService {
 
     //유저 전체 조회
     public List<UserResponseDto> findAll() {
+
         return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
     }
 
     //유저 정보 수정
-    @jakarta.transaction.Transactional
+    @Transactional
     public User updateUser(Long id, UpdateUserRequestDto requestDto) {
         //해당 유저 데이터 존재 여부 확인&불러오기
         User savedUser = userRepository.findByIdOrElseThrow(id);
@@ -69,17 +72,17 @@ public class UserService {
     }
 
     //회원탈퇴
-    @jakarta.transaction.Transactional
+    @Transactional
     public void signOut(Long id, String password) {
 
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-//            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         User user = optionalUser.get();
         if (!passwordEncoder.matches(password, user.getPassword())) {
-//            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
         user.setDeleted(true);

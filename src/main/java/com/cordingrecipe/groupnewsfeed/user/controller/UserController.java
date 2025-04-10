@@ -4,16 +4,22 @@ import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.service.UserService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.websocket.Session;
+
+import jdk.jshell.spi.ExecutionControl;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +37,15 @@ public class UserController {
     }
 
     // 2. 유저 조회 기능
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDto> findUser(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        UserResponseDto userResponseDto = userService.findUser(userId);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+    }
+
+    // 2. 유저 조회 기능
     @GetMapping("/{id}")
     public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) {
         FindUserIdResponseDto findUserById  = userService.findUser(id);
@@ -42,6 +57,20 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> findAll() {
         List<UserResponseDto> userList = userService.findAll();
         return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
+    // 4. 유저 정보 수정 기능
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponseDto> updateUser(
+
+            HttpSession session,
+            @Valid @RequestBody UpdateUserRequestDto requestDto
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        User updateUser = userService.updateUser(userId, requestDto);
+        UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     // 4. 유저 정보 수정 기능
@@ -57,12 +86,23 @@ public class UserController {
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
+
+    // 5. 유저 탈퇴 기능
+    @DeleteMapping("/me")
+    public ResponseEntity<String> deleteUser(HttpSession session, @RequestBody SignOutRequestDto requestDto) {
+        Long userId = (Long) session.getAttribute("userId");
+        userService.signOut(userId, requestDto.getPassword());
+        return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
+    }
+
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestBody SignOutRequestDto requestDto) {
+
         userService.signOut(id, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
     }
+
 
     //6.유저 자기소개글
     @PatchMapping("/introduction")
