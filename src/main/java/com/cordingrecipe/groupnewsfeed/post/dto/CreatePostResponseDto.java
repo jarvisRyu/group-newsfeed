@@ -30,6 +30,6 @@ public class CreatePostResponseDto {
     }
 
     public static CreatePostResponseDto toDto(Post post){
-        return new CreatePostResponseDto(post.getId(), post.getUser().getUserName(), post.getTitle(), post.getContents(), post.getCreatedAt(), post.getUpdatedAt());
+        return new CreatePostResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContents(), post.getCreatedAt(), post.getUpdatedAt());
     }
 }

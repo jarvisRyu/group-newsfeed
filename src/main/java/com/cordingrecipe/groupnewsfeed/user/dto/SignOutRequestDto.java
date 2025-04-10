@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.dto;
+package com.cordingrecipe.groupnewsfeed.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
