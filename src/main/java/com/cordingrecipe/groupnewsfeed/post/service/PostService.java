@@ -7,6 +7,7 @@ import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
+import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,10 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public CreatePostResponseDto savePost(String title, String contents, User user, Long id) {
+    public CreatePostResponseDto savePost(String title, String contents, Long userId) {
+    
+        // 세션에서 로그인 유무 확인
+        if (userId == null) {
+            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
+        }
 
-        Post post = new Post(title, contents, user);
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+
+        Post post = new Post(findUser, title, contents);
 
         if (contents == null) {
             throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
@@ -46,6 +55,7 @@ public class PostService {
     public Page<CreatePostResponseDto> findAllPost(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
 
         return postRepository.findAll(pageable)
                 .map(CreatePostResponseDto::toDto);

@@ -23,7 +23,7 @@ public class Post extends BaseEntity {
     private String title;
     private String contents;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -34,10 +34,10 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public Post(String title, String contents, User user) {
+    public Post(User user, String title, String contents) {
+        this.user = user;
         this.title = title;
         this.contents = contents;
-        this.user = user;
     }
 
     public void updatePost(String title, String contents) {

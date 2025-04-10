@@ -26,14 +26,13 @@ public class PostController {
 
         // 로그인 인가 세션에서 사용자 ID 가져오기
         HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
                         requestDto.getTitle(),
                         requestDto.getContents(),
-                        new User(),
                         userId
                 );
 
@@ -83,7 +82,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            @RequestBody HttpServletRequest request) {
+            HttpServletRequest request) {
 
         // 로그인 인가 세션에서 사용자 ID 가져오기
         HttpSession session = request.getSession(false); // 기존 세션 가져오기
