@@ -32,11 +32,12 @@ public class PostService {
 
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        Post post = new Post(findUser, title, contents);
-
+        // 유효성 검증
         if (contents == null) {
             throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
         }
+
+        Post post = new Post(findUser, title, contents);
 
         Post savePost = postRepository.save(post);
 
