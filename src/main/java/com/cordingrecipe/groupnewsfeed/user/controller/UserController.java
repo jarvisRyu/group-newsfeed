@@ -1,11 +1,17 @@
 package com.cordingrecipe.groupnewsfeed.user.controller;
 
+import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.websocket.Session;
+
 import jdk.jshell.spi.ExecutionControl;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +47,9 @@ public class UserController {
 
     // 2. 유저 조회 기능
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> findUser(@PathVariable Long id) {
-        UserResponseDto userResponseDto = userService.findUser(id);
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+    public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) {
+        FindUserIdResponseDto findUserById  = userService.findUser(id);
+        return new ResponseEntity<>(findUserById, HttpStatus.OK);
     }
 
     // 3. 전체 유저 조회 기능
@@ -95,6 +101,19 @@ public class UserController {
 
         userService.signOut(id, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
+    }
+
+
+    //6.유저 자기소개글
+    @PatchMapping("/introduction")
+    public ResponseEntity<String> updateIntroduction(@RequestBody UpdateIntroductionRequestDto dto,
+                                                   HttpServletRequest request){
+        HttpSession session = request.getSession();
+        UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute(Const.LOGIN_USER);
+        Long loginUserId= loginUser.getId();
+
+        userService.updateIntroduction(loginUserId,dto);
+        return new ResponseEntity<>("자기소개글이 등록되었습니다.",HttpStatus.OK);
     }
 
 }
