@@ -61,7 +61,7 @@ public class UserController {
     }
 
     // 5. 유저 탈퇴 기능
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/me")
     public ResponseEntity<String> deleteUser(HttpSession session, @RequestBody SignOutRequestDto requestDto) {
         Long userId = (Long) session.getAttribute("userId");
         userService.signOut(userId, requestDto.getPassword());
