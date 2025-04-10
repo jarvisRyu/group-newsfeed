@@ -38,11 +38,11 @@ public class UserController {
 
     // 2. 유저 조회 기능
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDto> findUser(HttpSession session) {
+    public ResponseEntity<FindUserIdResponseDto> findUser(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
-        UserResponseDto userResponseDto = userService.findUser(userId);
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+        FindUserIdResponseDto findUserIdResponseDto = userService.findUser(userId);
+        return new ResponseEntity<>(findUserIdResponseDto, HttpStatus.OK);
     }
 
     // 2. 유저 조회 기능
