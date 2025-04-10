@@ -5,7 +5,6 @@ import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.service.PostService;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/boards")
 public class PostController {
 
     private final PostService postService;
@@ -32,7 +31,6 @@ public class PostController {
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
-                        requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );
@@ -73,7 +71,6 @@ public class PostController {
 
         UpdatePostResponseDto updatePostResponseDto =
                 postService.updatePost(id,
-                        requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );

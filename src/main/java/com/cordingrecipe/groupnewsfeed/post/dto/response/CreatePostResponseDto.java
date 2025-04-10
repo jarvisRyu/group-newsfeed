@@ -12,24 +12,27 @@ public class CreatePostResponseDto {
 
     private final String username;
 
-    private final String title;
-
     private final String contents;
 
     private final LocalDateTime createdAt;
 
     private final LocalDateTime updatedAt;
 
-    public CreatePostResponseDto(Long id, String username, String title, String contents, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CreatePostResponseDto(Long id, String username, String contents, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
-        this.title = title;
         this.contents = contents;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static CreatePostResponseDto toDto(Post post){
-        return new CreatePostResponseDto(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getContents(), post.getCreatedAt(), post.getUpdatedAt());
+    public static CreatePostResponseDto toDto(Post post) {
+        return new CreatePostResponseDto(
+                post.getId(),
+                post.getUser().getUsername(),
+                post.getContents(),
+                post.getCreatedAt(),
+                post.getUpdatedAt()
+        );
     }
 }
