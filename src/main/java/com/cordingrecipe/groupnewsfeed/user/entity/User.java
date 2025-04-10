@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name="user")
+@Table(name = "user")
 public class User extends BaseEntity {
 
     @Id
@@ -22,6 +22,10 @@ public class User extends BaseEntity {
     private String email;
     private String password;
 
+
+    @Column(length = 1000)
+    private String introduction = "";
+
     private boolean isDeleted = false;
 
     public User(String username, String email, String password) {
@@ -30,12 +34,13 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public void updateUser(String username, String email, String password){
+    public void updateUser(String username, String email, String password) {
         if (username != null) this.username = username;
         if (email != null) this.email = email;
         if (password != null) this.password = password;
     }
 
-
-
+    public void updateIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
 }
