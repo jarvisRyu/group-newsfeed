@@ -8,6 +8,7 @@ import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,8 @@ public class PostController {
     @PutMapping("/{id}/edit")
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
-            @RequestBody CreateAndUpdadePostRequestDto requestDto, HttpServletRequest request
+            @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
+            HttpServletRequest request
     ) {
 
         // 로그인 인가 세션에서 사용자 ID 가져오기

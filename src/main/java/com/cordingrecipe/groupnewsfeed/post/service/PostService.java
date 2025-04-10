@@ -25,11 +25,6 @@ public class PostService {
 
     public CreatePostResponseDto savePost(String title, String contents, Long userId) {
 
-        // 세션에서 로그인 유무 확인
-        if (userId == null) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
-        }
-
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
         // 유효성 검증
@@ -80,11 +75,6 @@ public class PostService {
     @Transactional
     public UpdatePostResponseDto updatePost(Long id, String title, String contents, Long userId) {
 
-        // 세션에서 로그인 유무 확인
-        if (userId == null) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
-        }
-
         // 게시글 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
@@ -95,9 +85,6 @@ public class PostService {
 
         // 수정 로직
         findPost.updatePost(title, contents);
-        if (contents == null) {
-            throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
-        }
 
         return new UpdatePostResponseDto(
                 findPost.getId(),
