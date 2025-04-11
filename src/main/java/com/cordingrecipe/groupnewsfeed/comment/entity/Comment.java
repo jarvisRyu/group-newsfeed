@@ -31,6 +31,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name="post_id")
     private Post post;
 
+    // 댓글 생성 정적 메서드
     public static Comment create(User user, Post post, String commentContent) {
         return new Comment(user, post, commentContent);
     }
@@ -41,6 +42,7 @@ public class Comment extends BaseEntity {
       this.commentContent = commentContent;
     }
 
+    // 댓글 업데이트 메서드
     public void updateComment(String wishComment){
         if (wishComment != null){
             this.commentContent = wishComment;

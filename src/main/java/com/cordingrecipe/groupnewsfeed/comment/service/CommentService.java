@@ -35,7 +35,9 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
+        // 댓글 생성
         Comment comment = Comment.create(user,post,commentContent);
+        // 댓글 저장
         commentRepository.save(comment);
         return CommentResponseDto.toDto(comment);
     }
@@ -43,6 +45,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentAllResponseDto> getComments(Long postId) {
         List<Comment> comments = commentRepository.findByPostIdOrderByUpdatedAtDesc(postId);
+        // 찾은 댓글들을 Stream을 통하여 List<CommentAllResponseDto>로 변환하여 return
         return comments.stream()
                 .map(CommentAllResponseDto::toDto)
                 .collect(Collectors.toList());
@@ -57,10 +60,12 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(!(user.getId().equals(post.getUser().getId()) || comment.getUser().getId().equals(user.getId()))){
+        // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
+        if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
+        // 수정된 댓글을 업데이트
         comment.updateComment(wishComment);
         return EditedResponseDto.toDto(comment);
     }
@@ -74,10 +79,12 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
+        // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
         if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
+        // 받아옴 id로 조회된 댓글을 삭제
         commentRepository.delete(comment);
     }
 }
