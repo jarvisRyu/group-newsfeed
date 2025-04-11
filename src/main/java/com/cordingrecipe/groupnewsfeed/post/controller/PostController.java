@@ -22,12 +22,12 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreateAndUpdadePostRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<CreatePostResponseDto> savePost(
+            @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
+            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
+    ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
@@ -61,13 +61,10 @@ public class PostController {
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            HttpServletRequest request
+            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
     ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         UpdatePostResponseDto updatePostResponseDto =
                 postService.updatePost(id,
@@ -81,12 +78,10 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            HttpServletRequest request) {
+            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
+    ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         postService.deletePostById(id, userId);
 
