@@ -46,11 +46,11 @@ public class UserController {
     }
 
     // 2. 유저 조회 기능
-    @GetMapping("/{id}")
-    public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) {
-        FindUserIdResponseDto findUserById  = userService.findUser(id);
-        return new ResponseEntity<>(findUserById, HttpStatus.OK);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) {
+//        FindUserIdResponseDto findUserById  = userService.findUser(id);
+//        return new ResponseEntity<>(findUserById, HttpStatus.OK);
+//    }
 
     // 3. 전체 유저 조회 기능
     @GetMapping
@@ -74,26 +74,26 @@ public class UserController {
     }
 
     // 4. 유저 정보 수정 기능
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(
-
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRequestDto requestDto
-    ) {
-
-        User updateUser = userService.updateUser(id, requestDto);
-        UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
-    }
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<UserResponseDto> updateUser(
+//
+//            @PathVariable Long id,
+//            @Valid @RequestBody UpdateUserRequestDto requestDto
+//    ) {
+//
+//        User updateUser = userService.updateUser(id, requestDto);
+//        UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
+//        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+//    }
 
 
     // 5. 유저 탈퇴 기능
-    @DeleteMapping("/me")
-    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
-
-        userService.signOut(userId, requestDto.getPassword());
-        return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
-    }
+//    @DeleteMapping("/me")
+//    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
+//
+//        userService.signOut(userId, requestDto.getPassword());
+//        return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
+//    }
 
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/{id}")
