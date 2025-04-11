@@ -1,5 +1,7 @@
 package com.cordingrecipe.groupnewsfeed.friend.entity;
 
+import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
+import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.persistence.*;
@@ -31,6 +33,21 @@ public class Friends extends BaseEntity {
 
     public Friends() {
         
+    }
+
+    public static Friends pending(User fromUser, User toUser) {
+        return new Friends(fromUser, toUser, FriendRequestStatus.PENDING);
+    }
+
+    public static Friends accepted(User fromUser, User toUser) {
+        return new Friends(fromUser, toUser, FriendRequestStatus.ACCEPTED);
+    }
+
+    public void acceptIfNotAccepted() {
+        if(this.status == FriendRequestStatus.ACCEPTED) {
+            throw new CustomException(ErrorCode.FRIEND_ALREADY_ACCEPTED);
+        }
+        this.status = FriendRequestStatus.ACCEPTED;
     }
 
     public enum FriendRequestStatus {

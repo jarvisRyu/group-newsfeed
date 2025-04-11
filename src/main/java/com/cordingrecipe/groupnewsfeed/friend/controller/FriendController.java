@@ -22,7 +22,7 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping
-    public ResponseEntity<CreateFriendResponseDto> createFriend(@RequestBody CreateFriendRequestDto requestDto,  @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser) {
+    public ResponseEntity<CreateFriendResponseDto> createFriend(@RequestBody CreateFriendRequestDto requestDto,  @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -32,7 +32,7 @@ public class FriendController {
     }
 
     @PatchMapping("requests/{id}/accept")
-    public ResponseEntity<CreateFriendResponseDto> acceptFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<CreateFriendResponseDto> acceptFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -46,7 +46,7 @@ public class FriendController {
     //requests/{id} → 친구 요청이라는 자원
     //PATCH → 그 자원의 상태를 변경하겠다는 행위,
     @PatchMapping("requests/{id}/reject")
-    public ResponseEntity<CreateFriendResponseDto> declineFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<CreateFriendResponseDto> declineFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -56,7 +56,7 @@ public class FriendController {
     }
 
     @GetMapping("/received")
-    public ResponseEntity<List<CreateFriendResponseDto>> getFriend(@SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<List<CreateFriendResponseDto>> getFriend(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -66,7 +66,7 @@ public class FriendController {
     }
 
     @GetMapping("/requests/from/received")
-    public ResponseEntity<List<CreateFriendResponseDto>> checkUserSentRequest(@SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<List<CreateFriendResponseDto>> checkUserSentRequest(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -77,7 +77,7 @@ public class FriendController {
     }
 
     @GetMapping("/relations/between")
-    public ResponseEntity<CreateFriendResponseDto> findFriends(@RequestParam Long fromUserId, @RequestParam Long toUserId,@SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<CreateFriendResponseDto> findFriends(@RequestParam Long fromUserId, @RequestParam Long toUserId,@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
@@ -88,7 +88,7 @@ public class FriendController {
 
     @Transactional
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<CreateFriendResponseDto> deleteFriends(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER", required = false)UserLoginResponseDto loginUser) {
+    public ResponseEntity<CreateFriendResponseDto> deleteFriends(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
         if (loginUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }

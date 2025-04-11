@@ -30,10 +30,10 @@ public class FriendService {
 
     //친구 요청
     //ManyToOne관계는 객체 User를 직접 넣어줘야함. 객체 간의 연관관계를 이용해서 자동으로 관리해주기 때문에
-    public CreateFriendResponseDto createFriend(long userId, CreateFriendRequestDto createFriendRequestDto) {
+    public CreateFriendResponseDto createFriend(Long userId, CreateFriendRequestDto createFriendRequestDto) {
 
         //존재하지 않는 사용자
-        User loginUserEntity = userRepository.findById(userId).orElseThrow(() ->
+        User loginUser = userRepository.findById(userId).orElseThrow(() ->
                 new CustomException(ErrorCode.USER_NOT_FOUND)); //id값을 받아오는거
 
 
@@ -43,17 +43,17 @@ public class FriendService {
                 new CustomException(ErrorCode.USER_NOT_FOUND));
 
         //자기 자신에게 친구요청
-        if (loginUserEntity.getId().equals(toUser.getId())) {
+        if (loginUser.getId().equals(toUser.getId())) {
             throw new CustomException(ErrorCode.FRIEND_SELF_REQUEST);
         }
 
         //친구 관계, 요청한 이력있는지 중복검사
-        boolean alredyRequested = friendRepository.existsByFromUserAndToUser(loginUserEntity, toUser); //id값을 받아온거 , 보내는 사람
+        boolean alredyRequested = friendRepository.existsByFromUserAndToUser(loginUser, toUser); //id값을 받아온거 , 보내는 사람
         if (alredyRequested) {
             throw new CustomException(ErrorCode.FRIEND_ALREADY_REQUESTED);
         }
 
-        Friends friend = new Friends(loginUserEntity, toUser, Friends.FriendRequestStatus.PENDING);
+        Friends friend = Friends.pending(loginUser, toUser);
 
         friendRepository.save(friend);
 
@@ -62,7 +62,7 @@ public class FriendService {
     }
 
     //친구 요청 수락
-    public CreateFriendResponseDto acceptFriendRequest(long userId, Long requesterId) {
+    public CreateFriendResponseDto acceptFriendRequest(Long userId, Long requesterId) {
 
         Friends friendRequest = friendRepository.findByFromUserIdAndToUserIdAndStatus(
                 requesterId, userId, Friends.FriendRequestStatus.PENDING).orElseThrow(() ->
@@ -84,18 +84,17 @@ public class FriendService {
 
         //반대 방향 존재 여부 확인
         Optional<Friends> reverseOpt = friendRepository
-                .findByFromUserIdAndToUserId(friendRequest.getToUser().getId(), friendRequest.getFromUser().getId());
+                .findByFromUserIdAndToUserId(userId, requesterId);
 
         //b -> a요청이 DB에 있으면 accepted로 바꿔야함.
         //set사용으로 인한 문제가 발생할 수 있기 때문에 수정고민중
-        if (reverseOpt.isPresent()) {
-            Friends reverse = reverseOpt.get();
-            reverse.setStatus(ACCEPTED);
-            friendRepository.save(reverse);
-        }
+        reverseOpt.ifPresent(Friends::acceptIfNotAccepted);
+
+        User fromUser = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User toUser = userRepository.findById(requesterId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         //반대 방향에서 친구 객체가 생성되어야 하니까 FRIENDS를 하나 더 만듦.
-        Friends friend = new Friends(friendRequest.getToUser(), friendRequest.getFromUser(), ACCEPTED);
+        Friends friend = Friends.accepted(fromUser, toUser);
         friendRepository.save(friend);
 
         return new CreateFriendResponseDto(friendRequest);
@@ -134,7 +133,7 @@ public class FriendService {
 
     //내 친구 목록 조회
     @Transactional
-    public List<CreateFriendResponseDto> getReceivedRequests(long userId) {
+    public List<CreateFriendResponseDto> getReceivedRequests(Long userId) {
 
         List<Friends> fromAccepted = friendRepository
                 .findByFromUserIdAndStatus(userId, ACCEPTED);
@@ -151,7 +150,7 @@ public class FriendService {
 
     }
 
-    //나한테 친구신청한 목록 조회
+    //나한테 친구 신청한 목록 조회
     public List<CreateFriendResponseDto> getPendingFriendRequests(Long userId) {
 
         List<Friends> toAccepted = friendRepository
@@ -161,7 +160,7 @@ public class FriendService {
                 .map(CreateFriendResponseDto::new)
                 .toList();
     }
-
+    //친구 단일 조회
     public CreateFriendResponseDto findFriends(Long fromUserId, Long toUserId, Long userId) {
 
         if (!userId.equals(fromUserId) && !userId.equals(toUserId)) {
