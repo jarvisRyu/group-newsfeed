@@ -38,8 +38,9 @@ public class UserController {
 
     // 2. 유저 조회 기능
     @GetMapping("/me")
-    public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute("userId") Long userId) {
+    public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto) {
 
+        Long userId = dto.getId();
         FindUserIdResponseDto findUserIdResponseDto = userService.findUser(userId);
         return new ResponseEntity<>(findUserIdResponseDto, HttpStatus.OK);
     }
@@ -61,11 +62,12 @@ public class UserController {
     // 4. 유저 정보 수정 기능
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateUser(
-            @SessionAttribute("userId") Long userId,
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto,
             @Valid @RequestBody UpdateUserRequestDto requestDto
     ) {
 
 
+        Long userId = dto.getId();
         User updateUser = userService.updateUser(userId, requestDto);
         UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
@@ -76,8 +78,9 @@ public class UserController {
 
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/me")
-    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
+    public ResponseEntity<String> deleteUser(@SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto, @RequestBody SignOutRequestDto requestDto) {
 
+        Long userId = dto.getId();
         userService.signOut(userId, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
     }
