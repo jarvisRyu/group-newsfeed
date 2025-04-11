@@ -7,9 +7,10 @@ import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
 import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
 import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
 import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
-import com.cordingrecipe.groupnewsfeed.common.util.CommentUtils;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
+import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
+import com.cordingrecipe.groupnewsfeed.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,22 +23,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final CommentUtils commentUtils;
+    private final PostRepository postRepository;
 
     @Transactional
     public CommentResponseDto postComments(Long postId, Long userId, String commentContent) {
-        User user = commentUtils.findUserById(userId);
-        Post post = commentUtils.findPostById(postId);
 
-        Comment comment = new Comment(user, post, commentContent);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));;
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        // 댓글 생성
+        Comment comment = Comment.create(user,post,commentContent);
+        // 댓글 저장
         commentRepository.save(comment);
-        return new CommentResponseDto(comment.getCommentContent());
+        return CommentResponseDto.toDto(comment);
     }
 
     @Transactional(readOnly = true)
     public List<CommentAllResponseDto> getComments(Long postId) {
         List<Comment> comments = commentRepository.findByPostIdOrderByUpdatedAtDesc(postId);
+        // 찾은 댓글들을 Stream을 통하여 List<CommentAllResponseDto>로 변환하여 return
         return comments.stream()
                 .map(CommentAllResponseDto::toDto)
                 .collect(Collectors.toList());
@@ -45,30 +53,38 @@ public class CommentService {
 
     @Transactional
     public EditedResponseDto updateComment(Long postId, Long commentId, String wishComment, Long userId) {
-        User user = commentUtils.findUserById(userId);
-        Post post = commentUtils.findPostById(postId);
-        Comment comment = commentUtils.findCommentById(commentId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(!(user.getId().equals(post.getUser().getId()) || comment.getUser().getId().equals(user.getId()))){
+        // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
+        if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
-        comment.setCommentContent(wishComment);
-
-        return new EditedResponseDto(comment.getCommentContent());
-
+        // 수정된 댓글을 업데이트
+        comment.updateComment(wishComment);
+        return EditedResponseDto.toDto(comment);
     }
 
     @Transactional
     public void delete(Long postId, Long commentId, Long userId) {
-        User user = commentUtils.findUserById(userId);
-        Post post = commentUtils.findPostById(postId);
-        Comment comment = commentUtils.findCommentById(commentId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if(!(user.getId().equals(post.getUser().getId()) || comment.getUser().getId().equals(user.getId()))){
+        // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
+        if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
+        // 받아옴 id로 조회된 댓글을 삭제
         commentRepository.delete(comment);
     }
 }

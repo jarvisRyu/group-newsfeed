@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Entity
 @Table(name = "comment")
 public class Comment extends BaseEntity {
@@ -33,8 +31,9 @@ public class Comment extends BaseEntity {
     @JoinColumn(name="post_id")
     private Post post;
 
-    public Comment(String newComment){
-        this.commentContent = newComment;
+    // 댓글 생성 정적 메서드
+    public static Comment create(User user, Post post, String commentContent) {
+        return new Comment(user, post, commentContent);
     }
 
     public Comment(User user, Post post, String commentContent){
@@ -43,5 +42,11 @@ public class Comment extends BaseEntity {
       this.commentContent = commentContent;
     }
 
+    // 댓글 업데이트 메서드
+    public void updateComment(String wishComment){
+        if (wishComment != null){
+            this.commentContent = wishComment;
+        }
+    }
 
 }
