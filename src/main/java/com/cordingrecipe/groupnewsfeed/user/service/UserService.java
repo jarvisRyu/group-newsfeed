@@ -38,6 +38,11 @@ public class UserService {
     @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
 
+        //이메일 중복시 에러
+        if(userRepository.existsByEmail(requestDto.getEmail())){
+            throw new CustomException(ErrorCode.USER_EMAIL_DUPLICATED);
+        }
+
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = new User(requestDto.getUsername(), requestDto.getEmail(), hashedPassword);
         User savedUser = userRepository.save(user);
