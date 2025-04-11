@@ -18,14 +18,15 @@ public class LoginController {
     private final UserService userService;
 
     @PostMapping("/login") //user 로그인기능
-    public ResponseEntity<UserLoginResponseDto>  login(@Valid
+    public ResponseEntity<String>  login(@Valid
                                                       @RequestBody UserLoginRequestDto dto, //dto:email,password
                                                       HttpServletRequest request) { //session
         UserLoginResponseDto loginUserDto = userService.login(dto);//이메일,비밀번호로 id 찾기
 
-        HttpSession session = request.getSession(true); //세선값 가져오기
+        HttpSession session = request.getSession(true); //세선값 가져오기,없으면생성
         session.setAttribute("LOGIN_USER", loginUserDto);//session 에 정보저장
-        return new ResponseEntity<>(loginUserDto, HttpStatus.OK);
+        String wellComeMessage="로그인성공\n"+loginUserDto.getUserName()+"님 반갑습니다.";
+        return new ResponseEntity<>(wellComeMessage, HttpStatus.OK);
     }
 
     @PostMapping("/logout") //user 로그아웃
