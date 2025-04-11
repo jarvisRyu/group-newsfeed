@@ -89,15 +89,15 @@ public class UserController {
 
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/me")
-    public ResponseEntity<String> deleteUser(HttpSession session, @RequestBody SignOutRequestDto requestDto) {
-        Long userId = (Long) session.getAttribute("userId");
+    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
+
         userService.signOut(userId, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
     }
 
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestBody SignOutRequestDto requestDto) {
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id, @RequestBody SignOutRequestDto requestDto) {
 
         userService.signOut(id, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);

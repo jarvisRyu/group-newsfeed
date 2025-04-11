@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     @Column(length = 1000)
     private String introduction = "";
 
-    private boolean isDeleted = false;
+    private boolean deleted;
 
     public User(String username, String email, String password) {
         this.username = username;
@@ -42,5 +42,9 @@ public class User extends BaseEntity {
 
     public void updateIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public void newDeleted(){
+        this.deleted = true;
     }
 }

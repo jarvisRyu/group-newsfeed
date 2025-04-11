@@ -85,7 +85,7 @@ public class UserService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        user.setDeleted(true);
+        user.newDeleted();
         userRepository.delete(user);
     }
 
