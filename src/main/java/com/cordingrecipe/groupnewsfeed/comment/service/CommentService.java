@@ -30,10 +30,8 @@ public class CommentService {
     @Transactional
     public CommentResponseDto postComments(Long postId, Long userId, String commentContent) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));;
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        User user = userRepository.findByIdOrElseThrow(userId);
+        Post post = postRepository.findByIdOrElseThrow(postId);
 
         // 댓글 생성
         Comment comment = Comment.create(user,post,commentContent);
@@ -53,15 +51,12 @@ public class CommentService {
 
     @Transactional
     public EditedResponseDto updateComment(Long postId, Long commentId, String wishComment, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+        User user = userRepository.findByIdOrElseThrow(userId);
+        Post post = postRepository.findByIdOrElseThrow(postId);
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
-        if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
+        if(user.hasDeleteRole(userId, post) || comment.hasDeleteRole(commentId,userId)){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
@@ -72,15 +67,12 @@ public class CommentService {
 
     @Transactional
     public void delete(Long postId, Long commentId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+        User user = userRepository.findByIdOrElseThrow(userId);
+        Post post = postRepository.findByIdOrElseThrow(postId);
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
         // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
-        if(!(userId.equals(post.getUser().getId()) || comment.getUser().getId().equals(userId))){
+        if(user.hasDeleteRole(userId, post) || comment.hasDeleteRole(commentId,userId)){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
