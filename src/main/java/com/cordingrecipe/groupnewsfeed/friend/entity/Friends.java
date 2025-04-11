@@ -34,6 +34,9 @@ public class Friends extends BaseEntity {
     public Friends() {
         
     }
+    public static Friends rejected(User fromUser, User toUser) {
+        return new Friends(fromUser, toUser, FriendRequestStatus.REJECTED);
+    }
 
     public static Friends pending(User fromUser, User toUser) {
         return new Friends(fromUser, toUser, FriendRequestStatus.PENDING);
@@ -48,6 +51,12 @@ public class Friends extends BaseEntity {
             throw new CustomException(ErrorCode.FRIEND_ALREADY_ACCEPTED);
         }
         this.status = FriendRequestStatus.ACCEPTED;
+    }
+
+
+    public void rejectRequest() {
+
+        this.status = FriendRequestStatus.REJECTED;
     }
 
     public enum FriendRequestStatus {
