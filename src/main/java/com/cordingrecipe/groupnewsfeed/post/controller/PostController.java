@@ -24,7 +24,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<CreatePostResponseDto> savePost(
             @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -61,7 +61,7 @@ public class PostController {
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -78,7 +78,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            @SessionAttribute(name = "LOGIN_USER", required = false) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
