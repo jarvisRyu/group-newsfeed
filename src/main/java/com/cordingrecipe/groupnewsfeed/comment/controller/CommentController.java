@@ -55,6 +55,6 @@ public class CommentController {
                                   @SessionAttribute ("LOGIN_USER") UserLoginResponseDto loginUser){
         Long userId = loginUser.getId();
         commentService.delete(postId, commentId, userId);
-        return ResponseEntity.ok("삭제가 완료되었습니다.");
+        return ResponseEntity.ok("선택하신 댓글 삭제가 완료되었습니다.");
     }
 }
