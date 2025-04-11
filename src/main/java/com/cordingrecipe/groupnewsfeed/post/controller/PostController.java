@@ -14,17 +14,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
-@RestController
+@RequiredArgsConstructor // final 붙은 필드만 모아 자동 생성자 주입
+@RestController // @Controller + @ResponseBody
 @RequestMapping("/api/boards")
 public class PostController {
 
+    // 서비스를 사용하기 위해 만든 필드
     private final PostService postService;
 
     @PostMapping
     public ResponseEntity<CreatePostResponseDto> savePost(
             @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -61,7 +62,7 @@ public class PostController {
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -78,7 +79,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            @SessionAttribute(name = "LOGIN_USER", required = true) UserLoginResponseDto loginUser
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기

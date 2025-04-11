@@ -76,11 +76,6 @@ public class PostService {
     @Transactional
     public void deletePostById(Long id, Long userId) {
 
-        // 세션에서 로그인 유무 확인
-        if (userId == null) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
-        }
-
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
         // 작성자(ID)와 현재 사용자(ID) 비교
