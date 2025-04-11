@@ -5,7 +5,6 @@ import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.service.PostService;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
-import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -15,24 +14,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
-@RestController
-@RequestMapping("/api/posts")
+@RequiredArgsConstructor // final 붙은 필드만 모아 자동 생성자 주입
+@RestController // @Controller + @ResponseBody
+@RequestMapping("/api/boards")
 public class PostController {
 
+    // 서비스를 사용하기 위해 만든 필드
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<CreatePostResponseDto> savePost(@RequestBody CreateAndUpdadePostRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<CreatePostResponseDto> savePost(
+            @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+    ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         CreatePostResponseDto createPostResponseDto =
                 postService.savePost(
-                        requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );
@@ -63,17 +62,13 @@ public class PostController {
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            HttpServletRequest request
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
     ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         UpdatePostResponseDto updatePostResponseDto =
                 postService.updatePost(id,
-                        requestDto.getTitle(),
                         requestDto.getContents(),
                         userId
                 );
@@ -84,12 +79,10 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            HttpServletRequest request) {
+            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+    ) {
 
-        // 로그인 인가 세션에서 사용자 ID 가져오기
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기
-        UserLoginResponseDto loginUserId = (UserLoginResponseDto) session.getAttribute("LOGIN_USER");
-        Long userId = loginUserId.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
+        Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         postService.deletePostById(id, userId);
 

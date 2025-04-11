@@ -23,35 +23,26 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public CreatePostResponseDto savePost(String title, String contents, Long userId) {
+    @Transactional
+    public CreatePostResponseDto savePost(String contents, Long userId) { // Controller에서 받아온 작성된 게시글과 로그인유저ID
 
+        // 로그인유저ID와 같은 유저ID를 usserRepositoty에서 찾기, 없으면 레포지토리에서 예외 처리
         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-        // 유효성 검증
-        if (contents == null) {
-            throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
-        }
+        // 로그인유저ID와 유저ID가 같으면 로그인유저ID와 작성된 게시글 가져오기
+        Post post = Post.create(findUser, contents);
 
-        Post post = new Post(findUser, title, contents);
-
+        // 로그인유저ID와 작성된 게시글을 postRepository에 savePost 이름으로 저장
         Post savePost = postRepository.save(post);
 
-        return new CreatePostResponseDto(
-                savePost.getId(),
-                savePost.getUser().getUsername(),
-                savePost.getTitle(),
-                savePost.getContents(),
-                savePost.getCreatedAt(),
-                savePost.getUpdatedAt()
-        );
-
+        // 저장된 정보들인 로그인유저ID와 작성된 게시글 정보를 CreatePostResponseDto의 from 메서드의 매개변수로 넘겨준다.
+        return CreatePostResponseDto.toDto(savePost);
     }
 
     // 페이징 기능으로 리펙토리
     public Page<CreatePostResponseDto> findAllPost(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-
 
         return postRepository.findAll(pageable)
                 .map(CreatePostResponseDto::toDto);
@@ -62,18 +53,11 @@ public class PostService {
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
-        return new CreatePostResponseDto(
-                findPost.getId(),
-                findPost.getUser().getUsername(),
-                findPost.getTitle(),
-                findPost.getContents(),
-                findPost.getCreatedAt(),
-                findPost.getUpdatedAt()
-        );
+        return CreatePostResponseDto.toDto(findPost);
     }
 
     @Transactional
-    public UpdatePostResponseDto updatePost(Long id, String title, String contents, Long userId) {
+    public UpdatePostResponseDto updatePost(Long id, String contents, Long userId) {
 
         // 게시글 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
@@ -84,23 +68,13 @@ public class PostService {
         }
 
         // 수정 로직
-        findPost.updatePost(title, contents);
+        findPost.updatePost(contents);
 
-        return new UpdatePostResponseDto(
-                findPost.getId(),
-                findPost.getTitle(),
-                findPost.getContents(),
-                findPost.getUpdatedAt()
-        );
+        return UpdatePostResponseDto.from(findPost);
     }
 
     @Transactional
     public void deletePostById(Long id, Long userId) {
-
-        // 세션에서 로그인 유무 확인
-        if (userId == null) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
-        }
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
