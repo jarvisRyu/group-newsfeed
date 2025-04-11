@@ -4,22 +4,15 @@ import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.websocket.Session;
-
-import jdk.jshell.spi.ExecutionControl;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequiredArgsConstructor

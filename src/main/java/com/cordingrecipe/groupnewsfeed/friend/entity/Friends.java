@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
+
 @Getter
 @Entity
 @Table(name = "friends")
@@ -29,10 +29,20 @@ public class Friends extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FriendRequestStatus status;
 
+    public Friends() {
+        
+    }
+
     public enum FriendRequestStatus {
         PENDING,
         ACCEPTED,
         REJECTED
+    }
+
+    public Friends(User fromUser, User toUser, FriendRequestStatus status) {
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+        this.status = status;
     }
 
 }
