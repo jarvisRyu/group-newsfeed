@@ -1,10 +1,10 @@
 package com.cordingrecipe.groupnewsfeed.user.entity;
 
 import com.cordingrecipe.groupnewsfeed.common.entity.BaseEntity;
+import com.cordingrecipe.groupnewsfeed.user.dto.SignUpRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Getter
@@ -26,7 +26,9 @@ public class User extends BaseEntity {
     @Column(length = 1000)
     private String introduction = "";
 
-    private boolean deleted;
+
+    @Column(name = "is_deleted",nullable=false)
+    private boolean isDeleted;
 
     public User(String username, String email, String password) {
         this.username = username;
@@ -45,6 +47,17 @@ public class User extends BaseEntity {
     }
 
     public void newDeleted(){
-        this.deleted = true;
+        this.isDeleted = true;
+    }
+
+    // 정적 메서드 추가
+    public static User register(SignUpRequestDto dto, String hashedPassword){
+       User user = new User(
+               dto.getUsername(),
+                 dto.getEmail(),
+                 hashedPassword
+        );
+
+        return user;
     }
 }

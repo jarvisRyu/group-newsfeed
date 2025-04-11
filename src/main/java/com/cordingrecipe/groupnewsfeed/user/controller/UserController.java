@@ -38,19 +38,18 @@ public class UserController {
 
     // 2. 유저 조회 기능
     @GetMapping("/me")
-    public ResponseEntity<FindUserIdResponseDto> findUser(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+    public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute("userId") Long userId) {
 
         FindUserIdResponseDto findUserIdResponseDto = userService.findUser(userId);
         return new ResponseEntity<>(findUserIdResponseDto, HttpStatus.OK);
     }
 
     // 2. 유저 조회 기능
-//    @GetMapping("/{id}")
-//    public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) {
-//        FindUserIdResponseDto findUserById  = userService.findUser(id);
-//        return new ResponseEntity<>(findUserById, HttpStatus.OK);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<FindUserIdResponseDto> findUser(@PathVariable Long id) { //이거 살리기
+        FindUserIdResponseDto findUserById  = userService.findUser(id);
+        return new ResponseEntity<>(findUserById, HttpStatus.OK);
+    }
 
     // 3. 전체 유저 조회 기능
     @GetMapping
@@ -62,46 +61,27 @@ public class UserController {
     // 4. 유저 정보 수정 기능
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateUser(
-
-            HttpSession session,
+            @SessionAttribute("userId") Long userId,
             @Valid @RequestBody UpdateUserRequestDto requestDto
     ) {
-        Long userId = (Long) session.getAttribute("userId");
+
 
         User updateUser = userService.updateUser(userId, requestDto);
         UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
-    // 4. 유저 정보 수정 기능
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<UserResponseDto> updateUser(
-//
-//            @PathVariable Long id,
-//            @Valid @RequestBody UpdateUserRequestDto requestDto
-//    ) {
-//
-//        User updateUser = userService.updateUser(id, requestDto);
-//        UserResponseDto userResponseDto = UserResponseDto.toDto(updateUser);
-//        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
-//    }
+
 
 
     // 5. 유저 탈퇴 기능
-//    @DeleteMapping("/me")
-//    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
-//
-//        userService.signOut(userId, requestDto.getPassword());
-//        return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
-//    }
+    @DeleteMapping("/me")
+    public ResponseEntity<String> deleteUser(@SessionAttribute("userId") Long userId, @RequestBody SignOutRequestDto requestDto) {
 
-    // 5. 유저 탈퇴 기능
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable Long id, @RequestBody SignOutRequestDto requestDto) {
-
-        userService.signOut(id, requestDto.getPassword());
+        userService.signOut(userId, requestDto.getPassword());
         return new ResponseEntity<>("삭제가 완료되었습니다.", HttpStatus.OK);
     }
+
 
 
     //6.유저 자기소개글

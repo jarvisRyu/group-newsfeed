@@ -44,13 +44,15 @@ public class UserService {
         }
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-        User user = new User(requestDto.getUsername(), requestDto.getEmail(), hashedPassword);
+        boolean defaultDeleteValue = false;
+        User user = User.register(requestDto,hashedPassword);
         User savedUser = userRepository.save(user);
 
         return new SignUpResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
     }
 
     // 유저 단일 조회
+    @Transactional(readOnly = true)
     public FindUserIdResponseDto findUser(Long id) {
 
         User user = userRepository.findByIdOrElseThrow(id);
@@ -59,6 +61,7 @@ public class UserService {
     }
 
     //유저 전체 조회
+    @Transactional(readOnly = true)
     public List<UserResponseDto> findAll() {
 
         return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
