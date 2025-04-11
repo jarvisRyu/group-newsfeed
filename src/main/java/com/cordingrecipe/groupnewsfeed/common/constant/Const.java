@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.common.filter;
+package com.cordingrecipe.groupnewsfeed.common.constant;
 
 public abstract class Const {
 
