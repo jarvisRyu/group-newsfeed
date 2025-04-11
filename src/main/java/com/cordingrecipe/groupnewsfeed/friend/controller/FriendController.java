@@ -2,6 +2,7 @@ package com.cordingrecipe.groupnewsfeed.friend.controller;
 
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendRequestDto;
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendResponseDto;
+import com.cordingrecipe.groupnewsfeed.friend.dto.FriendResponseDto;
 import com.cordingrecipe.groupnewsfeed.friend.service.FriendService;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import jakarta.transaction.Transactional;
@@ -28,49 +29,49 @@ public class FriendController {
     }
 
     @PatchMapping("requests/{id}/accept")
-    public ResponseEntity<CreateFriendResponseDto> acceptFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<FriendResponseDto> acceptFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
-        CreateFriendResponseDto createFriendResponseDto =
+        FriendResponseDto friendResponseDto =
                 friendService.acceptFriendRequest(loginUser.getId(), id);
 
-        return ResponseEntity.ok(createFriendResponseDto);
+        return ResponseEntity.ok(friendResponseDto);
     }
 
     //requests/{id} → 친구 요청이라는 자원
     //PATCH → 그 자원의 상태를 변경하겠다는 행위,
     @PatchMapping("requests/{id}/reject")
-    public ResponseEntity<CreateFriendResponseDto> declineFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<FriendResponseDto> declineFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
-        CreateFriendResponseDto createFriendResponseDto = friendService.rejectFriendRequest(loginUser.getId(), id);
-        return ResponseEntity.ok(createFriendResponseDto);
+        FriendResponseDto friendResponseDto = friendService.rejectFriendRequest(loginUser.getId(), id);
+        return ResponseEntity.ok(friendResponseDto);
     }
 
     @GetMapping("/received")
-    public ResponseEntity<List<CreateFriendResponseDto>> getFriend(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<List<FriendResponseDto>> getFriend(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
 
-        List<CreateFriendResponseDto> friendList = friendService.getReceivedRequests(loginUser.getId());
+        List<FriendResponseDto> friendList = friendService.getReceivedRequests(loginUser.getId());
         return ResponseEntity.ok(friendList);
     }
 
     @GetMapping("/requests/from/received")
-    public ResponseEntity<List<CreateFriendResponseDto>> checkUserSentRequest(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<List<FriendResponseDto>> checkUserSentRequest(@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
-        List<CreateFriendResponseDto> friendList = friendService.getPendingFriendRequests(loginUser.getId());
+        List<FriendResponseDto> friendList = friendService.getPendingFriendRequests(loginUser.getId());
         return ResponseEntity.ok(friendList);
 
     }
 
     @GetMapping("/relations/between")
-    public ResponseEntity<CreateFriendResponseDto> findFriends(@RequestParam Long fromUserId, @RequestParam Long toUserId,@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<FriendResponseDto> findFriends(@RequestParam Long fromUserId, @RequestParam Long toUserId,@SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
-        CreateFriendResponseDto createFriendResponseDto = friendService.findFriends(fromUserId,toUserId,loginUser.getId());
-        return ResponseEntity.ok(createFriendResponseDto);
+        FriendResponseDto friendResponseDto = friendService.findFriends(fromUserId,toUserId,loginUser.getId());
+        return ResponseEntity.ok(friendResponseDto);
     }
 
     @Transactional
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<CreateFriendResponseDto> deleteFriends(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
+    public ResponseEntity<FriendResponseDto> deleteFriends(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
         friendService.deleteFriend(loginUser.getId(), id);
         return ResponseEntity.noContent().build(); // 204 No Content
