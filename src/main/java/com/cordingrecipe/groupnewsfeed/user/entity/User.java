@@ -17,11 +17,14 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = true)
     private String username;
+
     @Column(unique = true)
     private String email;
-    private String password;
 
+    @Column(nullable = true)
+    private String password;
 
     @Column(length = 1000)
     private String introduction = "";

@@ -1,11 +1,9 @@
 package com.cordingrecipe.groupnewsfeed.user.controller;
 
-import com.cordingrecipe.groupnewsfeed.common.filter.Const;
+import com.cordingrecipe.groupnewsfeed.common.constant.Const;
 import com.cordingrecipe.groupnewsfeed.user.dto.*;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import com.cordingrecipe.groupnewsfeed.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +29,7 @@ public class UserController {
 
     // 2. 유저 조회 기능
     @GetMapping("/me")
-    public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto) {
+    public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto) {
 
         Long userId = dto.getId();
         FindUserIdResponseDto findUserIdResponseDto = userService.findUser(userId);
@@ -55,7 +53,7 @@ public class UserController {
     // 4. 유저 정보 수정 기능
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateUser(
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto,
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto,
             @Valid @RequestBody UpdateUserRequestDto requestDto
     ) {
 
@@ -67,11 +65,9 @@ public class UserController {
     }
 
 
-
-
     // 5. 유저 탈퇴 기능
     @DeleteMapping("/me")
-    public ResponseEntity<String> deleteUser(@SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto dto, @RequestBody SignOutRequestDto requestDto) {
+    public ResponseEntity<String> deleteUser(@SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto, @RequestBody SignOutRequestDto requestDto) {
 
         Long userId = dto.getId();
         userService.signOut(userId, requestDto.getPassword());
@@ -83,11 +79,8 @@ public class UserController {
     //6.유저 자기소개글
     @PatchMapping("/introduction")
     public ResponseEntity<String> updateIntroduction(@RequestBody UpdateIntroductionRequestDto dto,
-                                                   HttpServletRequest request){
-        HttpSession session = request.getSession();
-        UserLoginResponseDto loginUser = (UserLoginResponseDto) session.getAttribute(Const.LOGIN_USER);
-        Long loginUserId= loginUser.getId();
-
+                                                     @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto request) {
+        Long loginUserId = request.getId();
         userService.updateIntroduction(loginUserId,dto);
         return new ResponseEntity<>("자기소개글이 등록되었습니다.",HttpStatus.OK);
     }
