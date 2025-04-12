@@ -78,7 +78,7 @@ public class UserController {
 
     //6.유저 자기소개글
     @PatchMapping("/introduction")
-    public ResponseEntity<String> updateIntroduction(@RequestBody UpdateIntroductionRequestDto dto,
+    public ResponseEntity<String> updateIntroduction(@Valid @RequestBody UpdateIntroductionRequestDto dto,
                                                      @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto request) {
         Long loginUserId = request.getId();
         userService.updateIntroduction(loginUserId,dto);
