@@ -44,7 +44,6 @@ public class UserService {
         }
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-        boolean defaultDeleteValue = false;
         User user = User.register(requestDto,hashedPassword);
         User savedUser = userRepository.save(user);
 
@@ -93,8 +92,8 @@ public class UserService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        user.newDeleted();
-        userRepository.delete(user);
+        user.softDeleted();
+
     }
 
     @Transactional

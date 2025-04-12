@@ -17,5 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     }
 
 
-    boolean existsByEmail(@Email(message = "이메일 형식으로 작성하십시오.") @NotBlank String email);
+    boolean existsByEmail(String email);
 }
