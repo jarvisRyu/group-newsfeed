@@ -1,5 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
+import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
 import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.post.dto.request.CreateAndUpdadePostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
@@ -26,6 +27,7 @@ public class PostController {
 
     // 서비스를 사용하기 위해 만든 필드
     private final PostService postService;
+    private final CommentRepository commentRepository;
 
     @PostMapping
     public ResponseEntity<CreatePostResponseDto> savePostBy(

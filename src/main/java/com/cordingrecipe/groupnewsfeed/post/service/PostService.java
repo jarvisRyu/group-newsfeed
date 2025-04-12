@@ -86,10 +86,10 @@ public class PostService {
     }
 
     @Transactional
-    public void deleteBy(Long id, Long userId) {
+    public void deleteBy(Long postid, Long userId) {
 
         // 게시글(ID) 조회
-        Post findPost = postRepository.findByIdOrElseThrow(id);
+        Post findPost = postRepository.findByIdOrElseThrow(postid);
 
         // 작성자 검증
         findPost.vaildateWriter(userId);
