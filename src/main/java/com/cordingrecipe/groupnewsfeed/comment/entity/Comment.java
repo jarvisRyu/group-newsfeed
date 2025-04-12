@@ -50,10 +50,10 @@ public class Comment extends BaseEntity {
 
     // 로그인된 유저와 댓글 작성자가 같은지 확인하는 메서드
     public boolean hasDeleteRole(Long commentId, Long userId){
-        if(!(commentId.equals(userId))){
-            return false;
-        } else{
+        if(commentId.equals(userId)){
             return true;
+        } else{
+            return false;
         }
     }
 

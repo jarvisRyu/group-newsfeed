@@ -55,8 +55,11 @@ public class CommentService {
         Post post = postRepository.findByIdOrElseThrow(postId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
+        boolean isPostWriter = user.hasDeleteRole(userId, post); // 게시글 작성자인지 확인
+        boolean isCommentWriter = comment.hasDeleteRole(commentId, userId); // 댓글 작성자인지 확인
+
         // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
-        if(user.hasDeleteRole(userId, post) || comment.hasDeleteRole(commentId,userId)){
+        if(!(isPostWriter && isCommentWriter)){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
@@ -71,8 +74,11 @@ public class CommentService {
         Post post = postRepository.findByIdOrElseThrow(postId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
+        boolean isPostWriter = user.hasDeleteRole(userId, post); // 게시글 작성자인지 확인
+        boolean isCommentWriter = comment.hasDeleteRole(commentId, userId); // 댓글 작성자인지 확인
+
         // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
-        if(user.hasDeleteRole(userId, post) || comment.hasDeleteRole(commentId,userId)){
+        if(!(isPostWriter && isCommentWriter)){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
