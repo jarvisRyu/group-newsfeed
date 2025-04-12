@@ -23,8 +23,7 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-
-    ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId,
+    ResponseEntity<CommentResponseDto> postComments (@PathVariable Long boardId,
                                                      @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser,
                                                      @Valid @RequestBody CommentRequestDto dto){
         Long userId = loginUser.getId(); // 기존 세션 가져오기
