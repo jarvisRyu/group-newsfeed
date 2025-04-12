@@ -1,7 +1,8 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
+
+import com.cordingrecipe.groupnewsfeed.common.constant.Const;
 import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
-import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.post.dto.request.CreateAndUpdadePostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.GetPostWhitCommentDto;
@@ -32,6 +33,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<CreatePostResponseDto> savePostBy(
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
+
             @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기

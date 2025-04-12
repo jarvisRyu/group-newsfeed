@@ -1,5 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.common.filter;
 
+import com.cordingrecipe.groupnewsfeed.common.constant.Const;
 import jakarta.servlet.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,7 @@ public class LoginFilter implements Filter {
 
         if (!isWhiteList(requestURI)) { //리스트 조회
             HttpSession session = httpRequest.getSession(false);//session 이 존재하는지 확인 , 생성X
-            if (session == null || session.getAttribute("LOGIN_USER") == null) {//세션이없거나 LOGIN_USER 에 정보가 없으면
+            if (session == null || session.getAttribute(Const.LOGIN_USER) == null) {//세션이없거나 LOGIN_USER 에 정보가 없으면
                 httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다.");   //401 오류발생
                 return;
             }
