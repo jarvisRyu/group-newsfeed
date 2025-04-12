@@ -1,6 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.friend.repository;
 
-import com.cordingrecipe.groupnewsfeed.friend.entity.Friends;
+import com.cordingrecipe.groupnewsfeed.friend.entity.Friend;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -9,19 +9,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FriendRepository extends JpaRepository<Friends, Long> {
+public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     boolean existsByFromUserAndToUser(User fromUser, User toUser);
 
-    Optional<Friends> findByFromUserIdAndToUserIdAndStatus(
-            Long requesterId, Long userId, Friends.FriendRequestStatus status);
+    Optional<Friend> findByFromUserIdAndToUserIdAndStatus(
+            Long requesterId, Long userId, Friend.FriendRequestStatus status);
 
-    List<Friends> findByFromUserIdAndStatus(
-            Long fromUserId, Friends.FriendRequestStatus status);
+    List<Friend> findByFromUserIdAndStatus(
+            Long fromUserId, Friend.FriendRequestStatus status);
 
-    List<Friends> findByToUserIdAndStatus(Long userId, Friends.FriendRequestStatus friendRequestStatus);
+    List<Friend> findByToUserIdAndStatus(Long userId, Friend.FriendRequestStatus friendRequestStatus);
 
-    Optional<Friends> findByFromUserIdAndToUserId(Long id, Long id1);
+    Optional<Friend> findByFromUserIdAndToUserId(Long id, Long id1);
 
-    boolean existsByFromUserIdAndToUserIdAndStatus(Long fromUserId, Long toUserId, Friends.FriendRequestStatus status);
+    boolean existsByFromUserIdAndToUserIdAndStatus(Long fromUserId, Long toUserId, Friend.FriendRequestStatus status);
+
+    default boolean isFriendInStatus(Long userId, Long requesterId, Friend.FriendRequestStatus status) {
+        return existsByFromUserIdAndToUserIdAndStatus(userId, requesterId, status) ||
+                existsByFromUserIdAndToUserIdAndStatus(requesterId, userId, status);
+    }
 }

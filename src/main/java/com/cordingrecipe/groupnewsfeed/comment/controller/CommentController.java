@@ -16,46 +16,47 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/boards/{postId}/comments")
+@RequestMapping("/api/boards/{boardId}/comments")
 public class CommentController {
 
     private final CommentService commentService;
 
     // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+
     ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId,
                                                      @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser,
                                                      @Valid @RequestBody CommentRequestDto dto){
         Long userId = loginUser.getId(); // 기존 세션 가져오기
-        CommentResponseDto response = commentService.postComments(postId, userId, dto.getCommentContent());
+        CommentResponseDto response = commentService.postComments(boardId, userId, dto.getCommentContent());
         return ResponseEntity.ok(response);
     }
 
     // 게시물 댓글 조회
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CommentAllResponseDto>> getComments(@PathVariable Long postId) {
-        List<CommentAllResponseDto> comments = commentService.getComments(postId);
+    public ResponseEntity<List<CommentAllResponseDto>> getComments(@PathVariable Long boardId) {
+        List<CommentAllResponseDto> comments = commentService.getComments(boardId);
         return ResponseEntity.ok(comments);
     }
 
     // 특정 댓글 수정
     @PutMapping(value = "/{commentId}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long postId,
+    ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long boardId,
                                                     @PathVariable Long commentId,
                                                     @Valid @RequestBody EditCommentRequestDto editCommentRequestDto,
                                                     @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser) {
         Long userId = loginUser.getId();
-        EditedResponseDto dto = commentService.updateComment(postId, commentId, editCommentRequestDto.getWishComment(), userId);
+        EditedResponseDto dto = commentService.updateComment(boardId, commentId, editCommentRequestDto.getWishComment(), userId);
         return ResponseEntity.ok(dto);
     }
 
     // 특정 댓글 삭제
     @DeleteMapping(value = "/{commentId}", produces= MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<String> delete(@PathVariable Long postId,
+    ResponseEntity<String> delete(@PathVariable Long boardId,
                                   @PathVariable Long commentId,
                                   @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser){
         Long userId = loginUser.getId();
-        commentService.delete(postId, commentId, userId);
+        commentService.delete(boardId, commentId, userId);
         return ResponseEntity.ok("선택하신 댓글 삭제가 완료되었습니다.");
     }
 }

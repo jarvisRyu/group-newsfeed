@@ -17,8 +17,7 @@ public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
-
+    private Long id;
 
     @Column(nullable = false)
     private String commentContent;
@@ -46,6 +45,15 @@ public class Comment extends BaseEntity {
     public void updateComment(String wishComment){
         if (wishComment != null){
             this.commentContent = wishComment;
+        }
+    }
+
+    // 로그인된 유저와 댓글 작성자가 같은지 확인하는 메서드
+    public boolean hasDeleteRole(Long commentId, Long userId){
+        if(!(commentId.equals(userId))){
+            return false;
+        } else{
+            return true;
         }
     }
 
