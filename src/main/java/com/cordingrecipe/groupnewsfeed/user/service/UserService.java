@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,6 @@ public class UserService {
         }
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-        boolean defaultDeleteValue = false;
         User user = User.register(requestDto,hashedPassword);
         User savedUser = userRepository.save(user);
 
@@ -55,8 +55,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public FindUserIdResponseDto findUser(Long id) {
 
-        User user = userRepository.findByIdOrElseThrow(id);
-
+        User user = userRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new IllegalArgumentException("USER_NOT_FOUND"));
         return FindUserIdResponseDto.toDto(user);
     }
 
@@ -64,7 +64,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponseDto> findAll() {
 
-        return userRepository.findAll().stream().map(UserResponseDto::toDto).toList();
+        List<User> users = userRepository.findByIsDeletedFalse();
+
+        return users.stream().map(UserResponseDto::toDto).collect(Collectors.toList());
+
     }
 
     //유저 정보 수정
@@ -93,8 +96,8 @@ public class UserService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        user.newDeleted();
-        userRepository.delete(user);
+        user.softDeleted();
+
     }
 
     @Transactional
