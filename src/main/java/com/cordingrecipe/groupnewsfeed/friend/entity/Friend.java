@@ -11,19 +11,19 @@ import lombok.Setter;
 
 @Getter
 @Entity
-@Table(name = "friends")
-public class Friends extends BaseEntity {
+@Table(name = "friend")
+public class Friend extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // requestId로 추후에 쓰일 것임.
 
     @ManyToOne
-    @JoinColumn(name = "requester_id")
+    @JoinColumn(name = "from_user_id")
     private User fromUser;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "to_user_id")
     private User toUser;
 
     @Setter
@@ -31,32 +31,32 @@ public class Friends extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FriendRequestStatus status;
 
-    public Friends() {
+    public Friend() {
         
     }
-    public static Friends rejected(User fromUser, User toUser) {
-        return new Friends(fromUser, toUser, FriendRequestStatus.REJECTED);
+
+    public void rejected() {
+        this.status = FriendRequestStatus.REJECTED;
     }
 
-    public static Friends pending(User fromUser, User toUser) {
-        return new Friends(fromUser, toUser, FriendRequestStatus.PENDING);
+    public void pending() {
+        this.status = FriendRequestStatus.PENDING;
     }
 
-    public static Friends accepted(User fromUser, User toUser) {
-        return new Friends(fromUser, toUser, FriendRequestStatus.ACCEPTED);
-    }
-
-    public void acceptIfNotAccepted() {
+    public void acceptIfPending() {
         if(this.status == FriendRequestStatus.ACCEPTED) {
             throw new CustomException(ErrorCode.FRIEND_ALREADY_ACCEPTED);
         }
         this.status = FriendRequestStatus.ACCEPTED;
     }
 
-
     public void rejectRequest() {
 
         this.status = FriendRequestStatus.REJECTED;
+    }
+
+    public void accepted() {
+        this.status = FriendRequestStatus.ACCEPTED;
     }
 
     public enum FriendRequestStatus {
@@ -65,10 +65,14 @@ public class Friends extends BaseEntity {
         REJECTED
     }
 
-    public Friends(User fromUser, User toUser, FriendRequestStatus status) {
+    public Friend(User fromUser, User toUser) {
         this.fromUser = fromUser;
         this.toUser = toUser;
-        this.status = status;
     }
 
+    public void ensureReceiverIs(Long userId) {
+        if (!this.toUser.getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FRIEND_ACCESS_DENIED);
+        }
+    }
 }

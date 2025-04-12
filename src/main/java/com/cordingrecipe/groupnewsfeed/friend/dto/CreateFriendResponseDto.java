@@ -1,6 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.friend.dto;
 
-import com.cordingrecipe.groupnewsfeed.friend.entity.Friends;
+import com.cordingrecipe.groupnewsfeed.friend.entity.Friend;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +17,7 @@ public class CreateFriendResponseDto {
 
 
     //User객체에서 받아와서 User id만 꺼낼
-    public CreateFriendResponseDto(Friends friend) {
+    public CreateFriendResponseDto(Friend friend) {
         this.receiverId = friend.getToUser().getId();
         this.senderId = friend.getFromUser().getId();
         this.status = friend.getStatus().name();
