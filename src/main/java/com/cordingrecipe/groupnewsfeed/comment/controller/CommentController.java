@@ -23,7 +23,6 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-
     ResponseEntity<CommentResponseDto> postComments (@PathVariable Long boardId,
                                                      @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser,
                                                      @Valid @RequestBody CommentRequestDto dto){
