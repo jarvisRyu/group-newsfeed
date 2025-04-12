@@ -21,7 +21,7 @@ public class CommentAllResponseDto {
 
     public static CommentAllResponseDto toDto(Comment comment) {
         return new CommentAllResponseDto(
-                comment.getCommentId(),
+                comment.getId(),
                 comment.getCommentContent(),
                 comment.getCreatedAt(),
                 comment.getUpdatedAt()
