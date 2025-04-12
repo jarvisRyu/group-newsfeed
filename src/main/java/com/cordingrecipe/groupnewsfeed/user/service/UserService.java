@@ -27,6 +27,9 @@ public class UserService {
         User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(
                 ()->new IllegalArgumentException ("해당 이메일이 존재하지 않습니다.")
         );
+        if(user.isDeleted()){
+            throw new CustomException(ErrorCode.USER_ALREADY_DELETED);
+        }
         if(!passwordEncoder.matches(dto.getPassword(),user.getPassword())){
         throw new IllegalArgumentException ("비밀번호가 일치하지 않습니다.");
         }
