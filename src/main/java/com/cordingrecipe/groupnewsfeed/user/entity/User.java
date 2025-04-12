@@ -27,7 +27,7 @@ public class User extends BaseEntity {
     private String introduction = "";
 
 
-    @Column(name = "is_deleted",nullable=false)
+    @Column(name = "is_deleted", nullable=false)
     private boolean isDeleted;
 
     public User(String username, String email, String password) {
@@ -49,6 +49,7 @@ public class User extends BaseEntity {
     public void softDeleted(){
         this.isDeleted = true;
     }
+
 
     // 정적 메서드 추가
     public static User register(SignUpRequestDto dto, String hashedPassword){
