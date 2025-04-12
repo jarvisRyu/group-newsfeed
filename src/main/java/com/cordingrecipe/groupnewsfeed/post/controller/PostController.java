@@ -1,7 +1,10 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
+import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
+import com.cordingrecipe.groupnewsfeed.common.filter.Const;
 import com.cordingrecipe.groupnewsfeed.post.dto.request.CreateAndUpdadePostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.GetPostWhitCommentDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.service.PostService;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
@@ -10,6 +13,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,71 +27,71 @@ public class PostController {
 
     // 서비스를 사용하기 위해 만든 필드
     private final PostService postService;
+    private final CommentRepository commentRepository;
 
     @PostMapping
-    public ResponseEntity<CreatePostResponseDto> savePost(
-            @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+    public ResponseEntity<CreatePostResponseDto> savePostBy(
+            @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
-
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         CreatePostResponseDto createPostResponseDto =
-                postService.savePost(
+                postService.savePostBy(
                         requestDto.getContents(),
                         userId
                 );
 
-        return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(createPostResponseDto);
     }
 
-    // 페이징 기능으로 리펙토리
+    // 게시글 전체 조회 + 페이징 기능
     @GetMapping("/newsfeed")
-    public ResponseEntity<Page<CreatePostResponseDto>> findAllPost(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ResponseEntity<Page<CreatePostResponseDto>> findAllPostBy(
+            // @PageableDefault 활용하여 리팩토링
+            @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<CreatePostResponseDto> allPostPage = postService.findAllPost(page, size);
+        Page<CreatePostResponseDto> allPostPage = postService.findAllPostBy(pageable);
 
-        return new ResponseEntity<>(allPostPage, HttpStatus.OK);
+        return ResponseEntity.ok(allPostPage);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreatePostResponseDto> findById(@PathVariable Long id) {
-        CreatePostResponseDto createPostResponseDto = postService.findById(id);
+    public ResponseEntity<GetPostWhitCommentDto> findBy(@PathVariable Long id) {
+        GetPostWhitCommentDto getPostWhitCommentDto = postService.findBy(id);
 
-        return new ResponseEntity<>(createPostResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(getPostWhitCommentDto);
     }
 
-    @PutMapping("/{id}/edit")
-    public ResponseEntity<UpdatePostResponseDto> updatePost(
+    @PutMapping("/{id}")
+    public ResponseEntity<UpdatePostResponseDto> updatePostBy(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
-
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
         UpdatePostResponseDto updatePostResponseDto =
-                postService.updatePost(id,
+                postService.updatePostBy(id,
                         requestDto.getContents(),
                         userId
                 );
 
-        return new ResponseEntity<>(updatePostResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(updatePostResponseDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePostById(
+    public ResponseEntity<String> deleteBy(
             @PathVariable Long id,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
-
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
 
-        postService.deletePostById(id, userId);
+        postService.deleteBy(id, userId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        String deleteMessage = "삭제되었습니다";
+
+        return ResponseEntity.ok(deleteMessage);
+
     }
 }
