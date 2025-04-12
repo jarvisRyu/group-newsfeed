@@ -2,6 +2,7 @@ package com.cordingrecipe.groupnewsfeed.comment.controller;
 
 import com.cordingrecipe.groupnewsfeed.comment.dto.*;
 import com.cordingrecipe.groupnewsfeed.comment.service.CommentService;
+import com.cordingrecipe.groupnewsfeed.common.constant.Const;
 import com.cordingrecipe.groupnewsfeed.user.dto.UserLoginResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CommentController {
     // 댓글 생성
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<CommentResponseDto> postComments (@PathVariable Long postId,
-                                                     @SessionAttribute ("LOGIN_USER") UserLoginResponseDto loginUser,
+                                                     @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser,
                                                      @Valid @RequestBody CommentRequestDto dto){
         Long userId = loginUser.getId(); // 기존 세션 가져오기
         CommentResponseDto response = commentService.postComments(postId, userId, dto.getCommentContent());
@@ -42,7 +43,7 @@ public class CommentController {
     ResponseEntity<EditedResponseDto> updateComment(@PathVariable Long postId,
                                                     @PathVariable Long commentId,
                                                     @Valid @RequestBody EditCommentRequestDto editCommentRequestDto,
-                                                    @SessionAttribute ("LOGIN_USER") UserLoginResponseDto loginUser) {
+                                                    @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser) {
         Long userId = loginUser.getId();
         EditedResponseDto dto = commentService.updateComment(postId, commentId, editCommentRequestDto.getWishComment(), userId);
         return ResponseEntity.ok(dto);
@@ -52,7 +53,7 @@ public class CommentController {
     @DeleteMapping(value = "/{commentId}", produces= MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<String> delete(@PathVariable Long postId,
                                   @PathVariable Long commentId,
-                                  @SessionAttribute ("LOGIN_USER") UserLoginResponseDto loginUser){
+                                  @SessionAttribute (Const.LOGIN_USER) UserLoginResponseDto loginUser){
         Long userId = loginUser.getId();
         commentService.delete(postId, commentId, userId);
         return ResponseEntity.ok("선택하신 댓글 삭제가 완료되었습니다.");

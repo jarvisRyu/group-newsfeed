@@ -1,5 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.post.controller;
 
+import com.cordingrecipe.groupnewsfeed.common.constant.Const;
 import com.cordingrecipe.groupnewsfeed.post.dto.request.CreateAndUpdadePostRequestDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
@@ -25,7 +26,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<CreatePostResponseDto> savePost(
             @Valid@RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -62,7 +63,7 @@ public class PostController {
     public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody CreateAndUpdadePostRequestDto requestDto,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
@@ -79,7 +80,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostById(
             @PathVariable Long id,
-            @SessionAttribute(name = "LOGIN_USER") UserLoginResponseDto loginUser
+            @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto loginUser
     ) {
 
         Long userId = loginUser.getId(); // 세션에서 로그인된 사용자 ID 꺼내기
