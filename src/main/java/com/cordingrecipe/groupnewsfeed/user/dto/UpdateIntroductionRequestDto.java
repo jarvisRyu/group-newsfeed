@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UpdateIntroductionRequestDto {
 
-    @Size(max=200,message = "100자를 넘을 수 없습니다.")
+    @Size(max=200,message = "200자를 넘을 수 없습니다.")
     private final String introduction;
 
 }

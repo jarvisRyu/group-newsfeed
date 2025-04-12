@@ -1,8 +1,8 @@
 package com.cordingrecipe.groupnewsfeed.user.repository;
 
+import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
+import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     default User findByIdOrElseThrow(Long id){
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("USER_NOT_FOUND)"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     boolean existsByEmail(String email);
