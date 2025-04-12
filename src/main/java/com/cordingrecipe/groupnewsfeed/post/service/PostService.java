@@ -1,8 +1,12 @@
 package com.cordingrecipe.groupnewsfeed.post.service;
 
+import com.cordingrecipe.groupnewsfeed.comment.dto.CommentAllResponseDto;
+import com.cordingrecipe.groupnewsfeed.comment.entity.Comment;
+import com.cordingrecipe.groupnewsfeed.comment.repository.CommentRepository;
 import com.cordingrecipe.groupnewsfeed.common.advice.CustomException;
 import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.CreatePostResponseDto;
+import com.cordingrecipe.groupnewsfeed.post.dto.response.GetPostWhitCommentDto;
 import com.cordingrecipe.groupnewsfeed.post.dto.response.UpdatePostResponseDto;
 import com.cordingrecipe.groupnewsfeed.post.entity.Post;
 import com.cordingrecipe.groupnewsfeed.post.repository.PostRepository;
@@ -16,72 +20,79 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
-    public CreatePostResponseDto savePost(String contents, Long userId) { // Controller에서 받아온 작성된 게시글과 로그인유저ID
+    public CreatePostResponseDto savePostBy(String contents, Long id) {
 
-        // 로그인유저ID와 같은 유저ID를 usserRepositoty에서 찾기, 없으면 레포지토리에서 예외 처리
-        User findUser = userRepository.findByIdOrElseThrow(userId);
+        // 로그인유저 조회
+        User findUser = userRepository.findByIdOrElseThrow(id);
 
-        // 로그인유저ID와 유저ID가 같으면 로그인유저ID와 작성된 게시글 가져오기
-        Post post = Post.create(findUser, contents);
+        // 게시글 조회
+        Post post = Post.of(findUser, contents);
 
-        // 로그인유저ID와 작성된 게시글을 postRepository에 savePost 이름으로 저장
+        // 게시글 저장
         Post savePost = postRepository.save(post);
 
-        // 저장된 정보들인 로그인유저ID와 작성된 게시글 정보를 CreatePostResponseDto의 from 메서드의 매개변수로 넘겨준다.
         return CreatePostResponseDto.toDto(savePost);
     }
 
-    // 페이징 기능으로 리펙토리
-    public Page<CreatePostResponseDto> findAllPost(int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+    // 페이징하여 전체 게시물 조회
+    // @PageableDefault 활용으로 리팩토링
+    public Page<CreatePostResponseDto> findAllPostBy(Pageable pageable) {
 
         return postRepository.findAll(pageable)
                 .map(CreatePostResponseDto::toDto);
     }
 
-    @Transactional(readOnly = true)
-    public CreatePostResponseDto findById(Long id) {
-
-        Post findPost = postRepository.findByIdOrElseThrow(id);
-
-        return CreatePostResponseDto.toDto(findPost);
-    }
-
     @Transactional
-    public UpdatePostResponseDto updatePost(Long id, String contents, Long userId) {
+    public GetPostWhitCommentDto findBy(Long id) {
 
         // 게시글 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
-        // 작성자(ID)와 현재 사용자(ID) 비교
-        if (!findPost.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
-        }
+        // 댓글 조회
+        List<Comment> comments = commentRepository.findByPostIdOrderByUpdatedAtDesc(id);
 
-        // 수정 로직
+        List<CommentAllResponseDto> commentList = comments.stream()
+                .map(CommentAllResponseDto::toDto)
+                .collect(Collectors.toList());
+
+        return GetPostWhitCommentDto.from(findPost, commentList);
+    }
+
+    @Transactional
+    public UpdatePostResponseDto updatePostBy(Long postid, String contents, Long userId) {
+
+        // 게시글 조회
+        Post findPost = postRepository.findByIdOrElseThrow(postid);
+
+        // 작성자 검증
+        findPost.vaildateWriter(userId);
+
+        // 게시물 수정
         findPost.updatePost(contents);
 
         return UpdatePostResponseDto.from(findPost);
     }
 
     @Transactional
-    public void deletePostById(Long id, Long userId) {
+    public void deleteBy(Long id, Long userId) {
 
+        // 게시글(ID) 조회
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
-        // 작성자(ID)와 현재 사용자(ID) 비교
-        if (!findPost.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.POST_ACCESS_DENIED);
-        }
+        // 작성자 검증
+        findPost.vaildateWriter(userId);
 
         // 삭제 로직
         postRepository.delete(findPost);
