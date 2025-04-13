@@ -1,7 +1,6 @@
 package com.cordingrecipe.groupnewsfeed.friend.dto;
 
 import com.cordingrecipe.groupnewsfeed.friend.entity.Friend;
-import com.cordingrecipe.groupnewsfeed.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,12 +17,4 @@ public class FriendResponseDto {
         this.toUserId = friend.getToUser().getId();
         this.status = friend.getStatus().name();
     }
-
-    public FriendResponseDto(Friend friend, User me) {
-        this.fromUserId = friend.getFromUser().getId();
-        this.toUserId = friend.getToUser().getId();
-        this.status = friend.getStatus().name();
-    }
-
-
 }

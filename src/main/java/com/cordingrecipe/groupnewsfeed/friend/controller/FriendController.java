@@ -39,8 +39,6 @@ public class FriendController {
         return ResponseEntity.ok(friendResponseDto);
     }
 
-    //requests/{id} → 친구 요청이라는 자원
-    //PATCH → 그 자원의 상태를 변경하겠다는 행위,
     @PatchMapping("requests/{id}/reject")
     public ResponseEntity<FriendResponseDto> declineFriendRequest(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER")UserLoginResponseDto loginUser) {
 
@@ -61,7 +59,6 @@ public class FriendController {
 
         List<FriendResponseDto> friendList = friendService.getPendingFriendRequests(loginUser.getId());
         return ResponseEntity.ok(friendList);
-
     }
 
     @GetMapping("/relations")

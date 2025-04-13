@@ -15,8 +15,6 @@ public class CreateFriendResponseDto {
     private final String status;
     private LocalDateTime createdAt;
 
-
-    //User객체에서 받아와서 User id만 꺼낼
     public CreateFriendResponseDto(Friend friend) {
         this.toUserId = friend.getToUser().getId();
         this.fromUserId = friend.getFromUser().getId();

@@ -14,6 +14,4 @@ public class FriendViewDto {
         this.friendId = friendId;
         this.friendName = friendName;
     }
-
-
 }
