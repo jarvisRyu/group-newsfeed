@@ -14,19 +14,13 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     boolean existsByFromUserAndToUser(User fromUser, User toUser);
 
     Optional<Friend> findByFromUserIdAndToUserIdAndStatus(
-            Long requesterId, Long userId, Friend.FriendRequestStatus status);
+            Long fromUserId, Long toUserId, Friend.FriendRequestStatus status);
 
-    List<Friend> findByFromUserIdAndStatus(
-            Long fromUserId, Friend.FriendRequestStatus status);
+    List<Friend> findByFromUserIdAndStatus(Long fromUserId, Friend.FriendRequestStatus status);
 
     List<Friend> findByToUserIdAndStatus(Long userId, Friend.FriendRequestStatus friendRequestStatus);
 
-    Optional<Friend> findByFromUserIdAndToUserId(Long id, Long id1);
+    Optional<Friend> findByFromUserIdAndToUserId(Long toUserId, Long fromUserId);
 
-    boolean existsByFromUserIdAndToUserIdAndStatus(Long fromUserId, Long toUserId, Friend.FriendRequestStatus status);
 
-    default boolean isFriendInStatus(Long userId, Long requesterId, Friend.FriendRequestStatus status) {
-        return existsByFromUserIdAndToUserIdAndStatus(userId, requesterId, status) ||
-                existsByFromUserIdAndToUserIdAndStatus(requesterId, userId, status);
-    }
 }

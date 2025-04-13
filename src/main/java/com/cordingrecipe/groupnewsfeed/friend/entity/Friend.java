@@ -16,7 +16,7 @@ public class Friend extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // requestId로 추후에 쓰일 것임.
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "from_user_id")
@@ -31,13 +31,7 @@ public class Friend extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FriendRequestStatus status;
 
-    public Friend() {
-        
-    }
-
-    public void rejected() {
-        this.status = FriendRequestStatus.REJECTED;
-    }
+    public Friend() {}
 
     public void pending() {
         this.status = FriendRequestStatus.PENDING;
@@ -50,9 +44,7 @@ public class Friend extends BaseEntity {
         this.status = FriendRequestStatus.ACCEPTED;
     }
 
-    public void rejectRequest() {
-
-        this.status = FriendRequestStatus.REJECTED;
+    public void rejectRequest() {this.status = FriendRequestStatus.REJECTED;
     }
 
     public void accepted() {

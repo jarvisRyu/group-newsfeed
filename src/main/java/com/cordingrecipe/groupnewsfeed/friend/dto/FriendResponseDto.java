@@ -8,15 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(force = true)
 public class FriendResponseDto {
 
-    private final Long receiverId; //toUserid
-    private final Long senderId;
+    private final Long toUserId;
+    private final Long fromUserId;
     private final String status;
 
     public FriendResponseDto(Friend friend) {
-        this.receiverId = friend.getToUser().getId();
-        this.senderId = friend.getFromUser().getId();
+        this.fromUserId = friend.getFromUser().getId();
+        this.toUserId = friend.getToUser().getId();
         this.status = friend.getStatus().name();
     }
-
-
 }

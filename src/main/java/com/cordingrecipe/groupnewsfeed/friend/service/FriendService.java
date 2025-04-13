@@ -6,6 +6,7 @@ import com.cordingrecipe.groupnewsfeed.common.advice.ErrorCode;
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendRequestDto;
 import com.cordingrecipe.groupnewsfeed.friend.dto.CreateFriendResponseDto;
 import com.cordingrecipe.groupnewsfeed.friend.dto.FriendResponseDto;
+import com.cordingrecipe.groupnewsfeed.friend.dto.FriendViewDto;
 import com.cordingrecipe.groupnewsfeed.friend.entity.Friend;
 import com.cordingrecipe.groupnewsfeed.friend.repository.FriendRepository;
 import com.cordingrecipe.groupnewsfeed.user.entity.User;
@@ -16,8 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.cordingrecipe.groupnewsfeed.friend.entity.Friend.FriendRequestStatus.*;
+import static com.cordingrecipe.groupnewsfeed.friend.entity.Friend.FriendRequestStatus.ACCEPTED;
 
 @Service
 @RequiredArgsConstructor
@@ -26,26 +28,20 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
-    //친구 요청
-    //ManyToOne관계는 객체 User를 직접 넣어줘야함. 객체 간의 연관관계를 이용해서 자동으로 관리해주기 때문에
     @Transactional
     public CreateFriendResponseDto createFriend(Long userId, CreateFriendRequestDto createFriendRequestDto) {
 
-        //존재하지 않는 사용자
         User loginUser = userRepository.findByIdOrElseThrow(userId);
 
-        //수신유저 존재하지 않음
-        Long receiverId = createFriendRequestDto.getReceiverId();
-        User toUser = userRepository.findByIdOrElseThrow(receiverId);
+        Long toUserId = createFriendRequestDto.getToUserId();
+        User toUser = userRepository.findByIdOrElseThrow(toUserId);
 
-        //자기 자신에게 친구요청
         if (loginUser.getId().equals(toUser.getId())) {
             throw new CustomException(ErrorCode.FRIEND_SELF_REQUEST);
         }
 
-        //친구 관계, 요청한 이력있는지 중복검사
-        boolean alredyRequested = friendRepository.existsByFromUserAndToUser(loginUser, toUser); //id값을 받아온거 , 보내는 사람
-        if (alredyRequested) {
+        boolean alreadyRequested = friendRepository.existsByFromUserAndToUser(loginUser, toUser);
+        if (alreadyRequested) {
             throw new CustomException(ErrorCode.FRIEND_ALREADY_REQUESTED);
         }
 
@@ -57,33 +53,27 @@ public class FriendService {
 
     }
 
-    //친구 요청 수락
     @Transactional
-    public FriendResponseDto acceptFriendRequest(Long userId, Long requesterId) {
+    public FriendResponseDto acceptFriendRequest(Long toUserId,Long fromUserId) {
 
         Friend friendRequest = friendRepository.findByFromUserIdAndToUserIdAndStatus(
-                requesterId, userId, Friend.FriendRequestStatus.PENDING).orElseThrow(() ->
+                fromUserId, toUserId, Friend.FriendRequestStatus.PENDING).orElseThrow(() ->
                 new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
 
-        //요청 수락 권한 없음
-        friendRequest.ensureReceiverIs(userId);
+        friendRequest.ensureReceiverIs(toUserId);
 
-        //이미 친구 상태의 경우
         if (friendRequest.getStatus() == ACCEPTED) {
             throw new CustomException(ErrorCode.FRIEND_ALREADY_ACCEPTED);
         }
 
-        // 친구 요청 수락처리
-        friendRequest.acceptIfPending(); //set대신 status == accepted처리
+        friendRequest.acceptIfPending();
         friendRepository.save(friendRequest);
 
-        //반대 방향 존재 여부 확인
         friendRepository.findByFromUserIdAndToUserId(friendRequest.getToUser().getId(), friendRequest.getFromUser().getId())
                 .ifPresent(Friend::acceptIfPending);
 
-
-        User fromUser = userRepository.findByIdOrElseThrow(userId);
-        User toUser = userRepository.findByIdOrElseThrow(requesterId);
+        User fromUser = userRepository.findByIdOrElseThrow(toUserId);
+        User toUser = userRepository.findByIdOrElseThrow(fromUserId);
 
         Friend friend = new Friend(fromUser, toUser);
         friend.accepted();
@@ -92,60 +82,49 @@ public class FriendService {
         return new FriendResponseDto(friendRequest);
     }
 
-    //친구 요청 거절
     @Transactional
-    public FriendResponseDto rejectFriendRequest(Long userId, Long requesterId) {
+    public FriendResponseDto rejectFriendRequest(Long toUserId, Long fromUserId) {
 
-        //친구 요청이 존재하지 않습니다.
         Friend friendRequest = friendRepository.findByFromUserIdAndToUserIdAndStatus(
-                requesterId, userId, Friend.FriendRequestStatus.PENDING).orElseThrow(() ->
-                new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
+                fromUserId, toUserId, Friend.FriendRequestStatus.PENDING
+        ).orElseThrow(() ->
+                new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND)
+        );
 
-        //요청 수락 권한 없음
+        friendRequest.ensureReceiverIs(toUserId);
 
-        friendRequest.ensureReceiverIs(userId);
-        //이미 친구상태면 요청 또 보낼 수 없음 (양방향)
-        if(friendRepository.isFriendInStatus(userId, requesterId,ACCEPTED)) {
-            throw new CustomException(ErrorCode.FRIEND_ALREADY_ACCEPTED);
-        }
-
-        friendRequest.rejectRequest(); //set대신 status == 거절처리
-
-        User fromUser = userRepository.findByIdOrElseThrow(userId);
-        User toUser = userRepository.findByIdOrElseThrow(requesterId);
-
-
-        Friend friend = new Friend(fromUser,toUser);
-        friend.rejected();
-        friendRepository.save(friend);
-
-
-        friendRequest.rejected();
+        friendRequest.rejectRequest();
         friendRepository.save(friendRequest);
 
         return new FriendResponseDto(friendRequest);
-
     }
 
-    //내 친구 목록 조회
     @Transactional
-    public List<FriendResponseDto> getReceivedRequests(Long userId) {
+    public List<FriendViewDto> getReceivedRequests(Long userId) {
 
-        List<Friend> fromAccepted = friendRepository
-                .findByFromUserIdAndStatus(userId, ACCEPTED);
-        List<Friend> toAccepted = friendRepository
-                .findByToUserIdAndStatus(userId, ACCEPTED);
+        List<Friend> allFriends = new ArrayList<>();
+        allFriends.addAll(friendRepository.findByFromUserIdAndStatus(userId, ACCEPTED));
+        allFriends.addAll(friendRepository.findByToUserIdAndStatus(userId, ACCEPTED));
 
-        List<Friend> all = new ArrayList<>();
-        all.addAll(fromAccepted);
-        all.addAll(toAccepted);
+        return allFriends.stream()
+                .filter(friend -> {
+                    Long fromId = friend.getFromUser().getId();
+                    Long toId = friend.getToUser().getId();
 
-        return all.stream()
-                .map(FriendResponseDto::new)
+                    return fromId < toId;
+                })
+                .map(friend -> {
+                    Long fromId = friend.getFromUser().getId();
+
+                    User other = fromId.equals(userId)
+                            ? friend.getToUser()
+                            : friend.getFromUser();
+
+                    return new FriendViewDto(other.getId(), other.getUsername());
+                })
                 .toList();
     }
 
-    //나한테 친구 신청한 목록 조회
     public List<FriendResponseDto> getPendingFriendRequests(Long userId) {
 
         List<Friend> toAccepted = friendRepository
@@ -156,36 +135,34 @@ public class FriendService {
                 .toList();
     }
 
-    //친구 단일 조회
-    public FriendResponseDto findFriends(Long fromUserId, Long toUserId, Long userId) {
+    public FriendViewDto findFriend(Long myId, Long targetUserId) {
+        Optional<Friend> optionalFriend = friendRepository
+                .findByFromUserIdAndToUserIdAndStatus(myId, targetUserId, ACCEPTED);
 
-        if (!userId.equals(fromUserId) && !userId.equals(toUserId)) {
-            throw new CustomException(ErrorCode.FRIEND_ACCESS_DENIED);
+        if (optionalFriend.isEmpty()) {
+            friendRepository.findByFromUserIdAndToUserIdAndStatus(targetUserId, myId, ACCEPTED);
         }
 
-        Friend friend = friendRepository
-                .findByFromUserIdAndToUserIdAndStatus(fromUserId, toUserId, ACCEPTED)
-                .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
+        Friend friend = optionalFriend.orElseThrow(() ->
+                new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND)
+        );
 
-        return new FriendResponseDto(friend);
+        return new FriendViewDto(friend.getToUser().getId(), friend.getToUser().getUsername());
     }
 
-
-    //친구 삭제
     @Transactional
-    public void deleteFriend(Long myId, Long userId) {
+    public void deleteFriend(Long myId, Long targetUserId) {
 
         Friend friend = friendRepository
-                .findByFromUserIdAndToUserId(myId, userId)
+                .findByFromUserIdAndToUserId(myId,targetUserId)
                 .orElseThrow(() -> new CustomException(ErrorCode.FRIEND_REQUEST_NOT_FOUND));
 
-        if(!userId.equals(friend.getToUser().getId())&& !userId.equals(friend.getFromUser().getId())) {
+        if(!targetUserId.equals(friend.getToUser().getId()) && !targetUserId.equals(friend.getFromUser().getId())) {
             throw new CustomException(ErrorCode.FRIEND_DELETE_FORBIDDEN);
         }
 
         friendRepository.delete(friend);
 
-        //반대방향 처리 값이 존재해야 delete있으면(friend 객체가 존재하면) → delete()로 삭제해라"
         friendRepository.findByFromUserIdAndToUserId(
                 friend.getToUser().getId(),
                 friend.getFromUser().getId()
@@ -195,9 +172,3 @@ public class FriendService {
 }
 
 
-//friend클래스 이름 변경
-//행위 메서드 생성
-//acceptIfPending()으로 메서드 이름 변경.
-//이미 친구상태면 요청 또 보낼 수 없음 (양방향) 메서드 repository책임지도록 리펙토링.
-//validate클래스 삭제 후 검증 책임이 Friend 도메인 객체로. Repository 인터페이스에 boolean로직 정의
-//friend테이블 외래키 이름 변경
