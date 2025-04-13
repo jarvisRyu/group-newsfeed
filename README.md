@@ -6,7 +6,7 @@
 Newsfeed는 SNS에서 자주 사용하는 게시글, 댓글, 친구 기능 등을 직접 구현해보며 **Spring Boot 기반 백엔드 시스템의 전체 흐름(인증, CRUD, 관계 설정 등)을 실습하고 협업 개발 경험을 쌓는 데 중점을 둔 팀 프로젝트**입니다.
 
 - **진행 기간**: 2025.04.07 ~ 2025.04.14
-- **참여 인원**: 4명
+- **참여 인원**: 5명
 - **주요 기술 스택**: Java 17, Spring Boot, JPA, MySQL, Lombok, Validation, GitHub, Notion 등
 
 🌈 ERD
