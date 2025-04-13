@@ -10,16 +10,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(force = true)
 public class CreateFriendResponseDto {
 
-    private final Long receiverId; //toUserid
-    private final Long senderId;
+    private final Long toUserId;
+    private final Long fromUserId; //toUserid
     private final String status;
     private LocalDateTime createdAt;
 
 
     //User객체에서 받아와서 User id만 꺼낼
     public CreateFriendResponseDto(Friend friend) {
-        this.receiverId = friend.getToUser().getId();
-        this.senderId = friend.getFromUser().getId();
+        this.toUserId = friend.getToUser().getId();
+        this.fromUserId = friend.getFromUser().getId();
         this.status = friend.getStatus().name();
         this.createdAt = friend.getCreatedAt();
     }
@@ -27,3 +27,4 @@ public class CreateFriendResponseDto {
 
 
 }
+//수정완료

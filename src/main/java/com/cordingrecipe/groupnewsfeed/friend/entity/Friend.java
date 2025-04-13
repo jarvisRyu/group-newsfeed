@@ -32,11 +32,7 @@ public class Friend extends BaseEntity {
     private FriendRequestStatus status;
 
     public Friend() {
-        
-    }
 
-    public void rejected() {
-        this.status = FriendRequestStatus.REJECTED;
     }
 
     public void pending() {
