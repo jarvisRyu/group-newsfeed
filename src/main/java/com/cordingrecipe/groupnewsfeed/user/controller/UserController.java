@@ -28,7 +28,7 @@ public class UserController {
     }
 
     // 2. 유저 조회 기능
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto) {
 
         Long userId = dto.getId();
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     // 4. 유저 정보 수정 기능
-    @PatchMapping("/me")
+    @PatchMapping
     public ResponseEntity<UserResponseDto> updateUser(
             @SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto,
             @Valid @RequestBody UpdateUserRequestDto requestDto
@@ -66,7 +66,7 @@ public class UserController {
 
 
     // 5. 유저 탈퇴 기능
-    @DeleteMapping("/me")
+    @DeleteMapping
     public ResponseEntity<String> deleteUser(@SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto, @RequestBody SignOutRequestDto requestDto) {
 
         Long userId = dto.getId();
