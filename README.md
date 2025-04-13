@@ -27,7 +27,6 @@ https://www.notion.so/teamsparta/SA-1ce2dc3ef51480789104f3869db0b480?pvs=4
 
 https://www.notion.so/teamsparta/SA-1ce2dc3ef51480789104f3869db0b480?pvs=4
 
-
 🛠 기술 스택
 
 | Category | Tech |
@@ -41,89 +40,91 @@ https://www.notion.so/teamsparta/SA-1ce2dc3ef51480789104f3869db0b480?pvs=4
 | Version Control | Git & GitHub |
 | IDE | IntelliJ IDEA |
 
-## 🌈 디렉토리 구조
+🌈 디렉토리 구조
 
- groupnewsfeed
-    ├── GroupNewsfeedApplication.java
-    ├── comment
-    │   ├── controller
-    │   │   └── CommentController.java
-    │   ├── dto
-    │   │   ├── CommentAllResponseDto.java
-    │   │   ├── CommentRequestDto.java
-    │   │   ├── CommentResponseDto.java
-    │   │   ├── EditCommentRequestDto.java
-    │   │   └── EditedResponseDto.java
-    │   ├── entity
-    │   │   └── Comment.java
-    │   ├── repository
-    │   │   └── CommentRepository.java
-    │   └── service
-    │       └── CommentService.java
-    ├── common
-    │   ├── advice
-    │   │   ├── CustomException.java
-    │   │   ├── ErrorCode.java
-    │   │   ├── ErrorResponse.java
-    │   │   └── GlobalExceptionHandler.java
-    │   ├── constant
-    │   │   └── Const.java
-    │   ├── entity
-    │   │   └── BaseEntity.java
-    │   └── filter
-    │       ├── LoginFilter.java
-    │       └── WebConfig.java
-    ├── config
-    │   └── PasswordEncoder.java
-    ├── friend
-    │   ├── controller
-    │   │   └── FriendController.java
-    │   ├── dto
-    │   │   ├── CreateFriendRequestDto.java
-    │   │   ├── CreateFriendResponseDto.java
-    │   │   └── FriendResponseDto.java
-    │   ├── entity
-    │   │   └── Friend.java
-    │   ├── repository
-    │   │   └── FriendRepository.java
-    │   └── service
-    │       └── FriendService.java
-    ├── post
-    │   ├── controller
-    │   │   └── PostController.java
-    │   ├── dto
-    │   │   ├── request
-    │   │   │   └── CreateAndUpdadePostRequestDto.java
-    │   │   └── response
-    │   │       ├── CreatePostResponseDto.java
-    │   │       ├── GetPostWhitCommentDto.java
-    │   │       └── UpdatePostResponseDto.java
-    │   ├── entity
-    │   │   └── Post.java
-    │   ├── repository
-    │   │   └── PostRepository.java
-    │   └── service
-    │       └── PostService.java
-    └── user
-        ├── controller
-        │   ├── LoginController.java
-        │   └── UserController.java
-        ├── dto
-        │   ├── FindUserIdResponseDto.java
-        │   ├── SignOutRequestDto.java
-        │   ├── SignUpRequestDto.java
-        │   ├── SignUpResponseDto.java
-        │   ├── UpdateIntroductionRequestDto.java
-        │   ├── UpdateUserRequestDto.java
-        │   ├── UserLoginRequestDto.java
-        │   ├── UserLoginResponseDto.java
-        │   └── UserResponseDto.java
-        ├── entity
-        │   └── User.java
-        ├── repository
-        │   └── UserRepository.java
-        └── service
-            └── UserService.java
+```text
+groupnewsfeed
+├── GroupNewsfeedApplication.java
+├── comment
+│   ├── controller
+│   │   └── CommentController.java
+│   ├── dto
+│   │   ├── CommentAllResponseDto.java
+│   │   ├── CommentRequestDto.java
+│   │   ├── CommentResponseDto.java
+│   │   ├── EditCommentRequestDto.java
+│   │   └── EditedResponseDto.java
+│   ├── entity
+│   │   └── Comment.java
+│   ├── repository
+│   │   └── CommentRepository.java
+│   └── service
+│       └── CommentService.java
+├── common
+│   ├── advice
+│   │   ├── CustomException.java
+│   │   ├── ErrorCode.java
+│   │   ├── ErrorResponse.java
+│   │   └── GlobalExceptionHandler.java
+│   ├── constant
+│   │   └── Const.java
+│   ├── entity
+│   │   └── BaseEntity.java
+│   └── filter
+│       ├── LoginFilter.java
+│       └── WebConfig.java
+├── config
+│   └── PasswordEncoder.java
+├── friend
+│   ├── controller
+│   │   └── FriendController.java
+│   ├── dto
+│   │   ├── CreateFriendRequestDto.java
+│   │   ├── CreateFriendResponseDto.java
+│   │   └── FriendResponseDto.java
+│   ├── entity
+│   │   └── Friend.java
+│   ├── repository
+│   │   └── FriendRepository.java
+│   └── service
+│       └── FriendService.java
+├── post
+│   ├── controller
+│   │   └── PostController.java
+│   ├── dto
+│   │   ├── request
+│   │   │   └── CreateAndUpdadePostRequestDto.java
+│   │   └── response
+│   │       ├── CreatePostResponseDto.java
+│   │       ├── GetPostWhitCommentDto.java
+│   │       └── UpdatePostResponseDto.java
+│   ├── entity
+│   │   └── Post.java
+│   ├── repository
+│   │   └── PostRepository.java
+│   └── service
+│       └── PostService.java
+└── user
+    ├── controller
+    │   ├── LoginController.java
+    │   └── UserController.java
+    ├── dto
+    │   ├── FindUserIdResponseDto.java
+    │   ├── SignOutRequestDto.java
+    │   ├── SignUpRequestDto.java
+    │   ├── SignUpResponseDto.java
+    │   ├── UpdateIntroductionRequestDto.java
+    │   ├── UpdateUserRequestDto.java
+    │   ├── UserLoginRequestDto.java
+    │   ├── UserLoginResponseDto.java
+    │   └── UserResponseDto.java
+    ├── entity
+    │   └── User.java
+    ├── repository
+    │   └── UserRepository.java
+    └── service
+        └── UserService.java
+```
 
 
 
