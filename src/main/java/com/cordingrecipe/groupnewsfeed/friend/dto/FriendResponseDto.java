@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(force = true)
 public class FriendResponseDto {
 
-    private final Long toUserId; //toUserid
+    private final Long toUserId;
     private final Long fromUserId;
     private final String status;
 

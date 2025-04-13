@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CreateFriendResponseDto {
 
     private final Long toUserId;
-    private final Long fromUserId; //toUserid
+    private final Long fromUserId;
     private final String status;
     private LocalDateTime createdAt;
 
@@ -21,8 +21,4 @@ public class CreateFriendResponseDto {
         this.status = friend.getStatus().name();
         this.createdAt = friend.getCreatedAt();
     }
-
-
-
 }
-//수정완료
