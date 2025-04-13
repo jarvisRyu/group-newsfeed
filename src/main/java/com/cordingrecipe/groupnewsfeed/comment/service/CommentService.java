@@ -51,15 +51,14 @@ public class CommentService {
 
     @Transactional
     public EditedResponseDto updateComment(Long postId, Long commentId, String wishComment, Long userId) {
-        User user = userRepository.findByIdOrElseThrow(userId);
         Post post = postRepository.findByIdOrElseThrow(postId);
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        boolean isPostWriter = user.hasDeleteRole(userId, post); // 게시글 작성자인지 확인
-        boolean isCommentWriter = comment.hasDeleteRole(commentId, userId); // 댓글 작성자인지 확인
+        // 게시글에 실제로 존재하는 댓글인지 확인하는 메서드
+        post.isMatched(post,comment);
 
-        // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
-        if(!(isPostWriter || isCommentWriter)){
+        // 댓글 작성자 본인이 아닐시 예외 발생
+        if(!(comment.hasDeleteRole(commentId, userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
