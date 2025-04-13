@@ -18,6 +18,7 @@ public enum ErrorCode {
     POST_TITLE_REQUIRED(400, "Bad Request", "게시글 제목은 필수입니다."),
     POST_CONTENT_REQUIRED(400, "Bad Request", "게시글 내용은 필수입니다."),
     POST_ACCESS_DENIED(403, "Forbidden", "해당 게시글에 대한 접근 권한이 없습니다."),
+    POST_NOT_MATCH(400,"Bad Request","해당 게시글에 존해하지 않는 댓글입니다."),
 
     COMMENT_CONTENT_REQUIRED(400, "Bad Request", "댓글 내용은 필수입니다."),
     COMMENT_ACCESS_DENIED(403, "Forbidden", "해당 댓글에 대한 권한이 없습니다."),

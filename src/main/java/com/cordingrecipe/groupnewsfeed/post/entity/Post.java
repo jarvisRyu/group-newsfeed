@@ -54,6 +54,9 @@ public class Post extends BaseEntity {
         }
     }
 
-
-
+    public void isMatched(Post post, Comment comment) {
+        if (!(post.getId().equals(comment.getPost().getId()))) {
+            throw new CustomException(ErrorCode.POST_NOT_MATCH);
+        }
+    }
 }
