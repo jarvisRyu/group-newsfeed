@@ -41,7 +41,7 @@ https://www.notion.so/teamsparta/SA-1ce2dc3ef51480789104f3869db0b480?pvs=4
 | Version Control | Git & GitHub |
 | IDE | IntelliJ IDEA |
 
-🌈 디렉토리 구조
+## 🌈 디렉토리 구조
 
  groupnewsfeed
     ├── GroupNewsfeedApplication.java
