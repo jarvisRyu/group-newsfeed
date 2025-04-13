@@ -25,13 +25,13 @@ public class UserService {
     @Transactional
     public UserLoginResponseDto login(@Valid UserLoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(
-                ()->new IllegalArgumentException ("해당 이메일이 존재하지 않습니다.")
+                ()->new CustomException(ErrorCode.USER_NOT_FOUND)
         );
         if(user.isDeleted()){
             throw new CustomException(ErrorCode.USER_ALREADY_DELETED);
         }
         if(!passwordEncoder.matches(dto.getPassword(),user.getPassword())){
-        throw new IllegalArgumentException ("비밀번호가 일치하지 않습니다.");
+        throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
         return new UserLoginResponseDto(
                 user.getId(),
@@ -59,7 +59,7 @@ public class UserService {
     public FindUserIdResponseDto findUser(Long id) {
 
         User user = userRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new IllegalArgumentException("USER_NOT_FOUND"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return FindUserIdResponseDto.toDto(user);
     }
 
