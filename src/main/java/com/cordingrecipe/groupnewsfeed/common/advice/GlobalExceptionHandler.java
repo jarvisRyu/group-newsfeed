@@ -36,10 +36,10 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();//메세지없으면 예외발생할수있음
         String errorMessage = (fieldError != null && fieldError.getDefaultMessage() != null)
-                ? fieldError.getDefaultMessage() : "잘못된 요청입니다.";
+                ? fieldError.getDefaultMessage() : ErrorCode.VALIDATION_FAILED.getMessage();
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(e.getStatusCode().value())
-                .error("Validation Failed")
+                .status(ErrorCode.VALIDATION_FAILED.getStatus())
+                .error(ErrorCode.VALIDATION_FAILED.getError())
                 .message(errorMessage)
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -48,53 +48,48 @@ public class GlobalExceptionHandler {
     //NPE 예외처리
     @ExceptionHandler(NullPointerException.class)
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(400)
-                .error("Null Pointer Exception")
-                .message(e.getMessage() != null ? e.getMessage() : "처리 중 null 값이 참조되었습니다.")
-                .build();
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.NULL_POINTER_EXCEPTION);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(400)
-                .error("Illegal Argument")
-                .message(e.getMessage() != null ? e.getMessage() : "잘못된 요청입니다.")
-                .build();
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.ILLEGAL_ARGUMENT);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e){
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(403)
-                .error("Access Denied")
-                .message(e.getMessage() != null ? e.getMessage() : "접근 권한이 없습니다.")
-                .build();
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.ACCESS_DENIED);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     protected ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e){
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(e.getStatusCode().value())
-                .error("Response Status Error")
-                .message(e.getReason() != null ? e.getReason() : "에러가 발생했습니다.")
+                .status(ErrorCode.RESPONSE_STATUS_ERROR.getStatus())
+                .error(ErrorCode.RESPONSE_STATUS_ERROR.getError())
+                .message(e.getReason() != null ? e.getReason() : ErrorCode.RESPONSE_STATUS_ERROR.getMessage())
                 .build();
-        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
+        return ResponseEntity.status(ErrorCode.RESPONSE_STATUS_ERROR.getStatus()).body(errorResponse);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(ErrorCode.RUNTIME_EXCEPTION.getStatus())
+                .error(ErrorCode.RUNTIME_EXCEPTION.getError())
+                .message(e.getMessage() != null ? e.getMessage() : ErrorCode.RUNTIME_EXCEPTION.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
 
     //모든 예외처리
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleException(Exception e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(500)
-                .error("Internal Server Error")
-                .message(e.getMessage() != null ? e.getMessage() : "예기치 못한 오류가 발생했습니다.")
-                .build();
-        return ResponseEntity.status(500).body(errorResponse);
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
 
