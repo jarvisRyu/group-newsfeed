@@ -58,7 +58,7 @@ public class CommentService {
         post.isMatched(post,comment);
 
         // 댓글 작성자 본인이 아닐시 예외 발생
-        if(!(comment.hasDeleteRole(commentId, userId))){
+        if(!(comment.hasDeleteRole(comment, userId))){
             throw new CustomException(ErrorCode.COMMENT_ACCESS_DENIED);
         }
 
@@ -77,7 +77,7 @@ public class CommentService {
         post.isMatched(post,comment);
 
         boolean isPostWriter = user.hasDeleteRole(userId, post); // 게시글 작성자인지 확인
-        boolean isCommentWriter = comment.hasDeleteRole(commentId, userId); // 댓글 작성자인지 확인
+        boolean isCommentWriter = comment.hasDeleteRole(comment, userId); // 댓글 작성자인지 확인
 
         // 댓글 작성자 및 게시글 작성자 본인이 아닐시 예외 발생
         if(!(isPostWriter || isCommentWriter)){
