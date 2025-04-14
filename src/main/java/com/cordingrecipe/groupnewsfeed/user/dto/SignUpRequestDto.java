@@ -16,6 +16,7 @@ public class SignUpRequestDto {
     private final String username;
     @Email(message = "이메일 형식으로 작성하십시오.")
     @NotBlank
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",message = "유효한 이메일 형식이 아닙니다.")
     private final String email;
 
     @Pattern( regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}\\[\\]:\";'<>?,./]).{8,}$"

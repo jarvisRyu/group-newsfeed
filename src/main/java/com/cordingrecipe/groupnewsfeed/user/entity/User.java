@@ -68,10 +68,10 @@ public class User extends BaseEntity {
 
     // 로그인된 유저와 게시물 작성자가 같은지 확인하는 메서드
     public boolean hasDeleteRole(Long userId, Post post){
-        if(!(userId.equals(post.getUser().getId()))){
-            return false;
-        } else{
+        if(userId.equals(post.getUser().getId())){
             return true;
+        } else{
+            return false;
         }
     }
 
