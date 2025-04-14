@@ -7,6 +7,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    VALIDATION_FAILED(400, "Validation Failed", "잘못된 요청입니다."),
+    NULL_POINTER_EXCEPTION(400, "Null Pointer Exception", "처리 중 null 값이 참조되었습니다."),
+    ILLEGAL_ARGUMENT(400, "Illegal Argument", "잘못된 요청입니다."),
+    ACCESS_DENIED(403, "Access Denied", "접근 권한이 없습니다."),
+    RESPONSE_STATUS_ERROR(400, "Response Status Error", "에러가 발생했습니다."),
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error", "예기치 못한 오류가 발생했습니다."),
+    RUNTIME_EXCEPTION(500, "Runtime Exception", "애플리케이션 실행 중 오류가 발생했습니다."),
+
     USER_NOT_FOUND(404,"Not Found","해당 사용자를 찾을 수 없습니다."),
     USER_EMAIL_DUPLICATED(409,"Conflict","이미 사용 중인 이메일입니다."),
     USER_UNAUTHORIZED(401, "Unauthorized", "로그인이 필요합니다."),
@@ -31,6 +39,8 @@ public enum ErrorCode {
     FRIEND_ACCESS_DENIED(403, "Forbidden", "친구 요청에 대한 권한이 없습니다."),
     FRIEND_NOT_FOUND(404, "Not Found", "친구 관계가 존재하지 않습니다."),
     FRIEND_DELETE_FORBIDDEN(403, "Forbidden", "본인만 친구를 삭제할 수 있습니다.");
+
+
 
 
     private final int status;
