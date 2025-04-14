@@ -27,8 +27,8 @@ public class UserController {
 
     }
 
-    // 2. 유저 조회 기능
-    @GetMapping
+    // 2. 본인 조회 기능
+    @GetMapping("/me")
     public ResponseEntity<FindUserIdResponseDto> findMe(@SessionAttribute(Const.LOGIN_USER) UserLoginResponseDto dto) {
 
         Long userId = dto.getId();
