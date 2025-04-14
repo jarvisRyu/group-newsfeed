@@ -1,0 +1,12 @@
+package com.cordingrecipe.groupnewsfeed.friend.dto;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(force = true)
+public class AcceptFriendRequestDto {
+
+    private final Long fromUserId;
+
+}

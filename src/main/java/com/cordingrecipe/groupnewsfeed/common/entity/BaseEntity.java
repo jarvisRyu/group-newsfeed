@@ -1,4 +1,4 @@
-package com.cordingrecipe.groupnewsfeed.entity;
+package com.cordingrecipe.groupnewsfeed.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false) //변경이 안되게끔 설정
