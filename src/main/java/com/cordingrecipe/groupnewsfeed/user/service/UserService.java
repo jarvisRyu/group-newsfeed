@@ -80,7 +80,7 @@ public class UserService {
         User savedUser = userRepository.findByIdOrElseThrow(id);
 
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-        savedUser.updateUser(requestDto.getUsername(), requestDto.getEmail(), hashedPassword);
+        savedUser.updateUser(requestDto.getUsername(), hashedPassword);
 
         return savedUser;
     }
